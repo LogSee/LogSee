@@ -1,6 +1,7 @@
 {
     "Client": {
-        "ClientSideFiltering": false
+        "ClientSideFiltering": false,
+        "ScanFrequency": 10
     },
     "WebUI": {
         "ENABLED": true,
