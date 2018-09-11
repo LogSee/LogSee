@@ -1,8 +1,9 @@
 {
     "WebUI": {
+        "ENABLED": true,
         "PORT": 1337
     },
-    "SQ:": {
+    "SQL": {
         "SQL_HOST": "0.0.0.0",
         "SQL_PORT": 3306,
         "SQL_USER": "admin",
