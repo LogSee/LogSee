@@ -1,4 +1,7 @@
 {
+    "Client": {
+        "ClientSideFiltering": false
+    },
     "WebUI": {
         "ENABLED": true,
         "PORT": 1337
