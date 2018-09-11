@@ -1,0 +1,10 @@
+This is a document that explains the LogSee client config.json file
+
+Any configuration in this file can be edited via the LogSee client web interface, however some people may not wish to run the web interface and configure via this file.
+
+This document will show the default settings and their meanings
+
+[Webui]
+Enable = True - this enables the web interface for configuration of the LogSee client. Set to False to disable
+Port = 1337 - This is the port the web interface runs on.
+
