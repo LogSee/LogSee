@@ -1,12 +1,16 @@
 {
     "Client": {
         "ClientSideFiltering": false,
-        "ScanFrequency": 10
+        "ScanFrequency": 4000,
+        "LogSee Server": "51.51.51.51"
     },
     "WebUI": {
-        "ENABLED": true,
-        "PORT": 1337,
-	    "IP": "0.0.0.0"
+        "Enabled": true,
+        "Port": 1337,
+        "IP": "0.0.0.0",
+        "auth": true,
+        "authUser": "admin",
+        "authPass": "admin"
     },
     "PathsToScan": [
         {
