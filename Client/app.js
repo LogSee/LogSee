@@ -1,6 +1,5 @@
 var fs = require('fs')
-var ini = require('ini')
 
-var config = ini.parse(fs.readFileSync('./client/config.ini', 'utf-8'))
+var config = JSON.parse(fs.readFileSync('./Client/config.json', 'utf8'));
 
-console.log(config.WebUI.PORT);
+console.log(config['DirsToScan'][0])

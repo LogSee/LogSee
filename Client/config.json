@@ -1,0 +1,28 @@
+{
+    "WebUI": {
+        "PORT": 1337
+    },
+    "SQ:": {
+        "SQL_HOST": "0.0.0.0",
+        "SQL_PORT": 3306,
+        "SQL_USER": "admin",
+        "SQL_PASS": "admin"
+    },
+    "DirsToScan": [
+        {
+            "Name": "Family Photos",
+            "Location": "C:\\Users\\Popzi\\Documents\\GitHub\\LogSee\\out.txt",
+            "SomeOptions": true
+        },
+        {
+            "Name": "Social Videos",
+            "Location": "I:\\BACKUP\\otherdump\\Memes\\logger.log",
+            "SomeOptions": true
+        },
+        {
+            "Name": "Other Place",
+            "Location": "C:\\Users\\Popzi\\Videos\\Euro Truck Simulator 2\\output.log",
+            "SomeOptions": true
+        }
+    ]
+}
