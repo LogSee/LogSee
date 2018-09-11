@@ -8,6 +8,11 @@ This document will show the default settings and their meanings
 ClientSideFiltering= False -  if enabled, client will only send data that's filtered, else, sends all the data and the server filters this out. If enabled, the LogSee client will utilize more resources. Filters can be configured in the config file or the web interface
 
 ScanFrequency = 10 -  how often the scan loop runs its check on files in milliseconds, 0 = off
+LogSee Server = Central LogSee Server IP
+LogSee Server Port = Central LogSee Server Stream Port
+LogSee Server Username = Username to auth to the streamer
+LogSee Server Password = md5 hash of credentials for streamer auth
+
 
 [Webui]
 Enable = True - this enables the web interface for configuration of the LogSee client. Set to False to disable
