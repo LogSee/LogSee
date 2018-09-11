@@ -3,21 +3,31 @@ var path = require('path') // For managing paths, ofcourse.
 
 // Parse config file
 var config = JSON.parse(fs.readFileSync('./Client/config.json', 'utf8'));
+var scanArr = []; // Gets populated by init(); An array of all the files and their metadata that need checking on.
 
-function Init() { // Same code to below but slightly different, I feel like it could be optimized somehow...
-    for (var f = 0; f < config['PathsToScan'].length; f++) {
-        if (fs.existsSync(config.PathsToScan[f].Location)) { // Does this dir/file actually exist on our system?
-            var tf = config.PathsToScan[f] // This File/dir (tf)
-            if (fs.lstatSync(config.PathsToScan[f].Location).isFile()) { // Is it a file or a directory?
-                // It's a file.
-                //
-                // Todo: iterate over the PathsToScan and see if the database has data on them. If so: count how many lines the database has stored and continue from there. We need to make the API first.
-                //
-            } else if (fs.lstatSync(config.PathsToScan[f].Location).isDirectory()) {
-                // It's a directory.
-                //
-                // Todo: iterate over the PathsToScan and see if the database has data on them. If so: count how many lines the database has stored and continue from there. We need to make the API first.
-                //
+// Go round all the files and collect their file names, size, and other things we can add in
+// into a single big array of files that need scanning. Then we can just iterate over that.
+function Init() {
+    console.log('Client Initializing...');
+
+    for (var f = 0; f < config['PathsToScan'].length; f++) { // For every config entry
+        if (fs.existsSync(config.PathsToScan[f].Location)) { // If the file or dir exists
+            var tfd = config.PathsToScan[f] // This file or dir  (tf)
+            if (fs.lstatSync(tfd.Location).isFile()) { // If it's a file we're looking at
+                // Populate all its data and push it
+                tfd.filename = path.basename(tfd.Location);
+                tfd.size = fs.statSync(tfd.Location).size;
+                scanArr.push(tfd);
+            } else if (fs.lstatSync(tfd.Location).isDirectory()) { // Elif its a dir
+                fs.readdirSync(tfd.Location).forEach(function(filename) { // for every item in dir
+                    if (path.extname(filename) == ".log") { // If it's a .log and nothing but a .log file, append
+                        // Populate all its data and push it
+                        tfd.filename = filename;
+                        tfd.Location = tfd.Location + filename;
+                        tfd.size = fs.statSync(tfd.Location).size;
+                        scanArr.push(tfd);
+                    };
+                });
             } else {
                 console.warn(`[Warning] I'm unable to detect what "${config.PathsToScan[f].Location}" is. It may be a socket or symlink.`);
             };
@@ -25,63 +35,23 @@ function Init() { // Same code to below but slightly different, I feel like it c
             console.warn(`[Warning] The file "${config.PathsToScan[f].Location}" does not exist!`);
         };
     };
-}
-
-// Populates config data with name and size.
-function PopulateMeta(obj) {
-    if (!obj.Location) {
-        console.warn(`[Warning] Location missing for ${obj}`);
-        return false;
-    };
-    // Have we seperated its file name for ease?    Note: May want to put in an init() func
-    if (!obj.filename) {
-        obj.filename = path.basename(obj.Location);
-    };
-    // Have we made note of it's size in memory?    Note: May want to put in an init() func
-    if (!obj.size) {
-        obj.size = fs.statSync(obj.Location).size;
-        console.log(`New size added for file "${obj.filename}" (${obj.size})`)
-    };
-    return true;
+    console.log('Client Initialized.');
+    ScanFiles();
 };
 
 function ScanFiles() {
     setInterval(function() {
         // Iterate over each file
-        for (var f = 0; f < config['PathsToScan'].length; f++) {
+        for (var f = 0; f < scanArr.length; f++) {
+            tf = scanArr[f]; // This File (tf)
 
-            // Does this dir/file actually exist on our system?
-            if (fs.existsSync(config.PathsToScan[f].Location)) {
-                var tf = config.PathsToScan[f] // This File/dir (tf)
-
-                // Is it a file or a directory?
-                if (fs.lstatSync(config.PathsToScan[f].Location).isFile()) {
-                    // It's a file.
-                    
-                    PopulateMeta(tf);
-
-                    // If the byte size != the previously logged byte size for that item, read it.
-                    if (fs.statSync(tf.Location).size != tf.size) {
-                        console.log(`New file size detected on file "${tf.filename}"`);
-                        tf.size = fs.statSync(tf.Location).size; // Update its file size
-                    };
-                } else if (fs.lstatSync(config.PathsToScan[f].Location).isDirectory()) {
-                    // It's a directory, loop through all the .log (but not .log.*) files
-                    fs.readdirSync(tf.Location).forEach(function(filename) {
-                        if (path.extname(filename) == ".log") {
-                            console.log(filename);
-                        };
-                    });
-
-                } else {
-                    console.warn(`[Warning] I'm unable to detect what "${config.PathsToScan[f].Location}" is. It may be a socket or symlink.`);
-                };
-
-            } else {
-                console.warn(`[Warning] The file "${config.PathsToScan[f].Location}" does not exist!`);
+            // If the byte size != the previously logged byte size for that item, read it.
+            if (fs.statSync(tf.Location).size != tf.size) {
+                console.log(`New file size detected on file "${tf.filename}"`);
+                tf.size = fs.statSync(tf.Location).size; // Update its file size
             };
         };
     }, config.Client.ScanFrequency) // Wait the ScanFrequency value
 };
 
-ScanFiles(); // Run
+Init(); // Run

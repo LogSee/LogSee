@@ -3,9 +3,9 @@
         "ClientSideFiltering": false,
         "ScanFrequency": 4000,
         "LogSee Server": "51.51.51.51",
-	"LogSee Server Port": 1338,
-	"LogSee Server Username": "streamer",
-	"LogSee Server Password": "md5hashofstreaerpw"
+	    "LogSee Server Port": 1338,
+	    "LogSee Server Username": "streamer",
+	    "LogSee Server Password": "md5hashofstreaerpw"
     },
     "WebUI": {
         "Enabled": true,
@@ -17,14 +17,10 @@
     },
     "PathsToScan": [
         {
-            "Name": "Family Photos",
-            "Location": "C:\\Users\\Popzi\\Documents\\GitHub\\LogSee\\out.txt",
-            "ScanDirectory": true
+            "Location": "C:\\Users\\Anon\\Documents\\GitHub\\LogSee\\Client\\sampleLogFile.log"
         },
         {
-            "Name": "Social Videos",
-            "Location": "I:\\BACKUP\\otherdump\\Memes\\",
-            "ScanDirectory": true
+            "Location": "I:\\BACKUP\\otherdump\\Memes\\"
         }
     ]
 }
