@@ -17,9 +17,12 @@ InstallLog=Install.log
 touch $InstallLog 
 echo "Installation Started" >> $InstallLog 
 
+#User creation
 mkdir -p /opt/LogSee/Client
 useradd LogSeeClient -d "/opt/LogSee/Client" -p '$6$brOJVvkwJPWUl$ln8RH9ofa4N6DkrtFr/2rAMgkY53v.nSLm6v.v/P6uJ4qV./agdOp24MipqWpsSrABtlGdmSnsTXRVOYWWLLe1'
 adduser LogSeeClient sudo
-
 echo "Added LogSee Client User" >> $InstallLog
 
+#SystemD script install
+cp SystemD-Scripts/LogSeeClient.ervice /lib/systemd/system/LogSeeClient.service
+echo "Copied SystemD script over" >> $InstallLog
