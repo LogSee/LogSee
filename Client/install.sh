@@ -18,8 +18,8 @@ touch $InstallLog
 echo "Installation Started" >> $InstallLog 
 
 mkdir -p /opt/LogSee/Client
-useradd LogSee -d "/opt/LogSee" -p '$6$brOJVvkwJPWUl$ln8RH9ofa4N6DkrtFr/2rAMgkY53v.nSLm6v.v/P6uJ4qV./agdOp24MipqWpsSrABtlGdmSnsTXRVOYWWLLe1'
-adduser LogSee sudo
+useradd LogSeeClient -d "/opt/LogSee/Client" -p '$6$brOJVvkwJPWUl$ln8RH9ofa4N6DkrtFr/2rAMgkY53v.nSLm6v.v/P6uJ4qV./agdOp24MipqWpsSrABtlGdmSnsTXRVOYWWLLe1'
+adduser LogSeeClient sudo
 
-echo "Added LogSee User" >> $InstallLog
+echo "Added LogSee Client User" >> $InstallLog
 
