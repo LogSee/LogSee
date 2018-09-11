@@ -4,6 +4,8 @@ Any configuration in this file can be edited via the LogSee client web interface
 
 This document will show the default settings and their meanings
 
+ClientSideFiltering= False -  if enabled, client will only send data that's filtered, else, sends all the data and the server filters this out. If enabled, the LogSee client will utilize more resources. Filters can be configured in the config file or the web interface
+
 [Webui]
 Enable = True - this enables the web interface for configuration of the LogSee client. Set to False to disable
 Port = 1337 - This is the port the web interface runs on.
