@@ -11,17 +11,12 @@
         {
             "Name": "Family Photos",
             "Location": "C:\\Users\\Popzi\\Documents\\GitHub\\LogSee\\out.txt",
-            "SomeOptions": true
+            "ScanDirectory": true
         },
         {
             "Name": "Social Videos",
             "Location": "I:\\BACKUP\\otherdump\\Memes\\logger.log",
-            "SomeOptions": true
-        },
-        {
-            "Name": "Other Place",
-            "Location": "C:\\Users\\Popzi\\Videos\\Euro Truck Simulator 2\\output.log",
-            "SomeOptions": true
+            "ScanDirectory": true
         }
     ]
 }
