@@ -5,9 +5,9 @@
     "WebUI": {
         "ENABLED": true,
         "PORT": 1337,
-	"IP": "0.0.0.0"
+	    "IP": "0.0.0.0"
     },
-    "DirsToScan": [
+    "PathsToScan": [
         {
             "Name": "Family Photos",
             "Location": "C:\\Users\\Popzi\\Documents\\GitHub\\LogSee\\out.txt",
