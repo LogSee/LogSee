@@ -11,3 +11,17 @@ Enable = True - this enables the web interface for configuration of the LogSee c
 Port = 1337 - This is the port the web interface runs on.
 IP = 0.0.0.0 - This is the IP that the client web interface listens on, if set to 0.0.0.0 it will listen on all available, else set something like 127.0.0.1 for loopback
 
+[PathsToScan]
+This is an array of the files that the logsee client will scan.
+an example is:
+
+{
+    "Name": "Family Photos",
+    "Location": "C:\\Users\\Popzi\\Documents\\GitHub\\LogSee\\out.txt",
+    "ScanDirectory": true
+},
+
+Name is an identifier that you can set to anything you like
+Location is the path to the file or folder on disk
+ScanDirectory = True - This should be set to true to pick up all .log files in the directory. 
+This means instead of specifying the specific files you want, you can specify the directory and it will recursivley parse all .log files in there. It will ignore anything with a name such as .log.1 or .log.tz, this should be set to false if specifying an individual file
