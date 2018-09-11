@@ -7,4 +7,5 @@ This document will show the default settings and their meanings
 [Webui]
 Enable = True - this enables the web interface for configuration of the LogSee client. Set to False to disable
 Port = 1337 - This is the port the web interface runs on.
+IP = 0.0.0.0 - This is the IP that the client web interface listens on, if set to 0.0.0.0 it will listen on all available, else set something like 127.0.0.1 for loopback
 
