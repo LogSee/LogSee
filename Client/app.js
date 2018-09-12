@@ -35,6 +35,8 @@ function Init() {
             console.warn(`[Warning] The file "${config.PathsToScan[f].Location}" does not exist!`);
         };
     };
+
+    //Todo: For every file pushed to the array, check if they exist in the database, if so, populate metadataa such as how many lines the database holds compared to the file
     console.log('Client Initialized.');
     ScanFiles();
 };
@@ -44,14 +46,14 @@ function ScanFiles() {
         // Iterate over each file
         for (var f = 0; f < scanArr.length; f++) {
             tf = scanArr[f]; // This File (tf)
-
             // If the byte size != the previously logged byte size for that item, read it.
             if (fs.statSync(tf.Location).size != tf.size) {
-                console.log(`New file size detected on file "${tf.filename}"`);
                 tf.size = fs.statSync(tf.Location).size; // Update its file size
+                console.log(`New file size detected on file "${tf.filename}"`);
             };
         };
     }, config.Client.ScanFrequency) // Wait the ScanFrequency value
+    console.log(`Client is running.`);
 };
 
 Init(); // Run

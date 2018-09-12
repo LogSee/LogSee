@@ -1,7 +1,7 @@
 {
     "Client": {
         "ClientSideFiltering": false,
-        "ScanFrequency": 4000,
+        "ScanFrequency": 10,
         "LogSee Server": "51.51.51.51",
 	    "LogSee Server Port": 1338,
 	    "LogSee Server Username": "streamer",
