@@ -37,6 +37,9 @@ function Init() {
     };
 
     //Todo: For every file pushed to the array, check if they exist in the database, if so, populate metadataa such as how many lines the database holds compared to the file
+
+    //Todo: check & launch webUI
+    
     console.log('Client Initialized.');
     ScanFiles();
 };
