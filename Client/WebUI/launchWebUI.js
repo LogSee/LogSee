@@ -7,15 +7,14 @@ var path = require('path')
 let app = new express();
 
 // Define Static files
-app.use(express.static('./Client/WebUI/static'))
+app.use(express.static(path.join(__dirname + '/static')));
 var config = JSON.parse(fs.readFileSync('./Client/config.json', 'utf8'));
 
-
+// Routes
 app.get('/', function(req, res) {
     res.sendFile(path.join(__dirname + '/templates/index.html'));
 });
 
-
-app.listen(config.WebUI.Port, function() {
-    console.log(`WebUI listening on port ${config.WebUI.Port}.`);
-})
+// Run WebUI
+app.listen(config.WebUI.Port, config.WebUI.IP);
+console.log(`WebUI listening on ${config.WebUI.IP}:${config.WebUI.Port}.`);
