@@ -41,7 +41,7 @@ function Init() {
 
     // Launch the webUI as a child if configured
     if (config.WebUI.Enabled) {
-        childProcess.fork(path.join(__dirname + '/WebUI/launchWebUI.js')); // May want to fix paths so they're relative to this __file__
+        childProcess.fork(path.join(__dirname + '/WebUI/launchWebUI.js'));
     };
 
     console.log('Client Initialized.');
