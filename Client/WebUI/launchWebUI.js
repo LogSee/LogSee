@@ -17,4 +17,4 @@ app.get('/', function(req, res) {
 
 // Run WebUI
 app.listen(config.WebUI.Port, config.WebUI.IP);
-console.log(`WebUI listening on ${config.WebUI.IP}:${config.WebUI.Port}.`);
+console.log(`WebUI listening on http://${config.WebUI.IP}:${config.WebUI.Port}.`);

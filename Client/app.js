@@ -43,7 +43,6 @@ function Init() {
     if (config.WebUI.Enabled) {
         childProcess.fork(path.join(__dirname + '/WebUI/launchWebUI.js'));
     };
-
     console.log('Client Initialized.');
     ScanFiles();
 };
