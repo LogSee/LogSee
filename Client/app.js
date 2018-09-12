@@ -1,5 +1,6 @@
-var fs = require('fs') // Nodes file system
-var path = require('path') // For managing paths, ofcourse.
+var childProcess = require('child_process')     // For launching the WebUI as a child process of client.
+var path = require('path')                      // For managing paths, ofcourse.
+var fs = require('fs')                          // Nodes file system
 
 // Parse config file
 var config = JSON.parse(fs.readFileSync('./Client/config.json', 'utf8'));
@@ -39,7 +40,10 @@ function Init() {
     //Todo: For every file pushed to the array, check if they exist in the database, if so, populate metadataa such as how many lines the database holds compared to the file
 
     //Todo: check & launch webUI
-    
+    if (config.WebUI.Enabled) {
+        childProcess.fork(path.join(__dirname + '/WebUI/launchWebUI.js')); // May want to fix paths so they're relative to this __file__
+    };
+
     console.log('Client Initialized.');
     ScanFiles();
 };
