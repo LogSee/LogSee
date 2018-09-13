@@ -6,5 +6,14 @@
         "RequireAuth": true,
         "AuthUser": "admin",
         "AuthPass": "admin"
-    }
+    },
+   "Email": {
+      "Enabled": true,
+      "SmtpServer":"smptp.potato.onion.com",
+      "SmtpPort": "25",
+      "Username": "lolz",
+      "Password": "md5hashieofiliketrains",
+      "FromAddress": "erhmahgherd@logsee.io"
+   }
+
 }
