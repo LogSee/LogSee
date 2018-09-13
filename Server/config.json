@@ -20,6 +20,12 @@
       "Username": "lolz",
       "Password": "md5hashieofiliketrains",
       "FromAddress": "erhmahgherd@logsee.io"
+   },
+   "Notifications": {
+      "Simplepush": {
+         "Enabled": true,
+         "Key": "HuxgBB"
+      }
    }
 
 }
