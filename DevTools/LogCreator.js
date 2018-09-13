@@ -7,8 +7,8 @@ fs.open(filename, 'w', function (err, file) {
 });
 
 function InsertJunk(){
-var RandomString = Math.random().toString(36).substr(2, 15);
-fs.appendFile(filename, RandomString + '\r\n' , function (err) {
+  var RandomString = Math.random().toString(36).substr(2, 15);
+  fs.appendFile(filename, RandomString + '\r\n' , function (err) {
   if (err) throw err;
   console.log('Added Log Line! Log name is: ' + filename);
 })
