@@ -2,6 +2,7 @@
     "Server": {
         "SQL_Host": "0.0.0.0",
         "SQL_Port": 3306,
+        "SQL_DB": "LogSee",
         "SQL_User": "admin",
         "SQL_Pass": "admin"
     },
