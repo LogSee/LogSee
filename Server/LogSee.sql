@@ -31,7 +31,11 @@ CREATE TABLE IF NOT EXISTS `Clients` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `UserID` int(11) DEFAULT NULL,
   `IP` varchar(50) DEFAULT NULL,
+<<<<<<< HEAD
   `InitalAuth` enum('Failed','Awaiting Approval','Approved','Denied') DEFAULT 'Failed',
+=======
+  `InitalAuth` enum('Failed','Awaiting Approval','Approved') DEFAULT 'Failed',
+>>>>>>> ff0d3e6502bc9b596c9cfc23ac18e562fe6a5d55
   `Live` enum('Y','N') DEFAULT NULL,
   PRIMARY KEY (`ID`),
   KEY `UserID_FK` (`UserID`),
@@ -40,6 +44,10 @@ CREATE TABLE IF NOT EXISTS `Clients` (
 
 -- Data exporting was unselected.
 -- Dumping structure for table LogSee.InitialAuthKeys
+<<<<<<< HEAD
+=======
+DROP TABLE IF EXISTS `InitialAuthKeys`;
+>>>>>>> ff0d3e6502bc9b596c9cfc23ac18e562fe6a5d55
 CREATE TABLE IF NOT EXISTS `InitialAuthKeys` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `UserID` int(11) DEFAULT NULL,
