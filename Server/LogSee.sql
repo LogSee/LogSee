@@ -6,10 +6,12 @@
 
 
 -- Dumping database structure for LogSee
+DROP DATABASE IF EXISTS `LogSee`;
 CREATE DATABASE IF NOT EXISTS `LogSee` /*!40100 DEFAULT CHARACTER SET utf8 */;
 USE `LogSee`;
 
 -- Dumping structure for table LogSee.Alerts
+DROP TABLE IF EXISTS `Alerts`;
 CREATE TABLE IF NOT EXISTS `Alerts` (
   `AlertID` int(11) NOT NULL AUTO_INCREMENT,
   `ClientID` int(11) NOT NULL,
@@ -27,15 +29,12 @@ CREATE TABLE IF NOT EXISTS `Alerts` (
 
 -- Data exporting was unselected.
 -- Dumping structure for table LogSee.Clients
+DROP TABLE IF EXISTS `Clients`;
 CREATE TABLE IF NOT EXISTS `Clients` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `UserID` int(11) DEFAULT NULL,
   `IP` varchar(50) DEFAULT NULL,
-<<<<<<< HEAD
   `InitalAuth` enum('Failed','Awaiting Approval','Approved','Denied') DEFAULT 'Failed',
-=======
-  `InitalAuth` enum('Failed','Awaiting Approval','Approved') DEFAULT 'Failed',
->>>>>>> ff0d3e6502bc9b596c9cfc23ac18e562fe6a5d55
   `Live` enum('Y','N') DEFAULT NULL,
   PRIMARY KEY (`ID`),
   KEY `UserID_FK` (`UserID`),
@@ -44,10 +43,7 @@ CREATE TABLE IF NOT EXISTS `Clients` (
 
 -- Data exporting was unselected.
 -- Dumping structure for table LogSee.InitialAuthKeys
-<<<<<<< HEAD
-=======
 DROP TABLE IF EXISTS `InitialAuthKeys`;
->>>>>>> ff0d3e6502bc9b596c9cfc23ac18e562fe6a5d55
 CREATE TABLE IF NOT EXISTS `InitialAuthKeys` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `UserID` int(11) DEFAULT NULL,
@@ -62,6 +58,7 @@ CREATE TABLE IF NOT EXISTS `InitialAuthKeys` (
 
 -- Data exporting was unselected.
 -- Dumping structure for table LogSee.LogFiles
+DROP TABLE IF EXISTS `LogFiles`;
 CREATE TABLE IF NOT EXISTS `LogFiles` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `ClientID` int(11) DEFAULT NULL,
@@ -76,6 +73,7 @@ CREATE TABLE IF NOT EXISTS `LogFiles` (
 
 -- Data exporting was unselected.
 -- Dumping structure for table LogSee.LogSeries
+DROP TABLE IF EXISTS `LogSeries`;
 CREATE TABLE IF NOT EXISTS `LogSeries` (
   `ID` int(11) NOT NULL,
   `RetentionTime` int(11) NOT NULL,
@@ -89,6 +87,7 @@ CREATE TABLE IF NOT EXISTS `LogSeries` (
 
 -- Data exporting was unselected.
 -- Dumping structure for table LogSee.ServerStatus
+DROP TABLE IF EXISTS `ServerStatus`;
 CREATE TABLE IF NOT EXISTS `ServerStatus` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`ID`)
@@ -96,6 +95,7 @@ CREATE TABLE IF NOT EXISTS `ServerStatus` (
 
 -- Data exporting was unselected.
 -- Dumping structure for table LogSee.Users
+DROP TABLE IF EXISTS `Users`;
 CREATE TABLE IF NOT EXISTS `Users` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `Live` enum('Y','N') DEFAULT 'Y',
