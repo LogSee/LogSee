@@ -1,0 +1,4 @@
+#/bin/bash
+logger "It installed some magic"
+echo "postinst ran"
+
