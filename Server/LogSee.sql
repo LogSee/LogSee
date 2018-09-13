@@ -10,6 +10,20 @@ DROP DATABASE IF EXISTS `LogSee`;
 CREATE DATABASE IF NOT EXISTS `LogSee` /*!40100 DEFAULT CHARACTER SET utf8 */;
 USE `LogSee`;
 
+-- Dumping structure for table LogSee.Alerts
+DROP TABLE IF EXISTS `Alerts`;
+CREATE TABLE IF NOT EXISTS `Alerts` (
+  `AlertID` int(11) NOT NULL AUTO_INCREMENT,
+  `TimeStamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `Severity` varchar(20) NOT NULL,
+  `ClientID` int(11) NOT NULL,
+  `LogMessage` longtext NOT NULL,
+  `NotificationIssued` enum('Y','N') NOT NULL,
+  `NotificationMethod` varchar(50) NOT NULL,
+  PRIMARY KEY (`AlertID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Data exporting was unselected.
 -- Dumping structure for table LogSee.Clients
 DROP TABLE IF EXISTS `Clients`;
 CREATE TABLE IF NOT EXISTS `Clients` (
