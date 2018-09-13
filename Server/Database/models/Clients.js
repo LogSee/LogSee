@@ -10,7 +10,7 @@ module.exports = function(sequelize, DataTypes) {
 		},
 		UserID: {
 			type: DataTypes.INTEGER(11),
-			allowNull: true,
+			allowNull: false,
 			references: {
 				model: 'Users',
 				key: 'ID'
@@ -22,12 +22,13 @@ module.exports = function(sequelize, DataTypes) {
 		},
 		InitalAuth: {
 			type: DataTypes.ENUM('Failed','Awaiting Approval','Approved','Denied'),
-			allowNull: true,
+			allowNull: false,
 			defaultValue: 'Failed'
 		},
 		Live: {
 			type: DataTypes.ENUM('Y','N'),
-			allowNull: true
+			allowNull: false,
+			defaultValue: 'N'
 		}
 	}, {
 		tableName: 'Clients'

@@ -1,53 +1,63 @@
 console.log('Initializing WebUI...');
-console.log(__dirname);
-
 var bodyParser = require('body-parser');    // npm install trash   ...oh wait no...    body-parser
-var Sequalize = require('sequelize');       // npm install sequelize, mysql2    (database ORM)
+var Sequelize = require('sequelize');       // npm install sequelize, mysql2    (database ORM)
 var express = require('express');           // npm install express      (for serving web stuff)
-//var sqlite3 = require('sqlite3')          // npm install sqlite3      (for talking to sqlite3)
-//var tedious = require('tedious')          // npm install tedious      (for talking to Microsoft SQL)
 var path = require('path');
 var fs = require('fs');
-var Alerts = require(path.join(__dirname + '/../Database/Alerts.js'))
-var Clients = require(path.join(__dirname + '/../Database/Clients.js'))
-var InitialAuthKeys = require(path.join(__dirname + '/../Database/InitialAuthKeys.js'))
-var LogFiles = require(path.join(__dirname + '/../Database/LogFiles.js'))
-var LogSeries = require(path.join(__dirname + '/../Database/LogSeries.js'))
-var ServerStatus = require(path.join(__dirname + '/../Database/ServerStatus.js'))
-var Users = require(path.join(__dirname + '/../Database/Users.js'))
-
-// Get config
-var config = JSON.parse(fs.readFileSync(path.join(__dirname + '/../config.json'), 'utf8'));
+//var sqlite3 = require('sqlite3')          // npm install sqlite3      (for talking to sqlite3)
+//var tedious = require('tedious')          // npm install tedious      (for talking to Microsoft SQL)
 
 // Create express app
 let app = new express();
-
-// Create ORM
-const sequalize = new Sequalize(`mysql://${config.Server.SQL_User}:${config.Server.SQL_Pass}@${config.Server.SQL_Host}:${config.Server.SQL_Port}/${config.Server.SQL_DB}`);
-
-// Test ORM
-sequalize.query('SELECT * FROM `Users`;').then(rows => {
-    console.log(JSON.stringify(rows))
-});
-
-
-// Setup a post body parser because for some stupid reason this isn't default
-app.use(bodyParser.json());                             // for parsing application/json
-app.use(bodyParser.urlencoded({ extended: true }));     // for parsing application/x-www-form-urlencoded
-
-// Define Static files
-app.use(express.static(path.join(__dirname + '/static')));
 var config = JSON.parse(fs.readFileSync(path.join(__dirname + '/../config.json'), 'utf8'));
 
-// Routes
+// Setup a post body parser because for some stupid reason this isn't default
+app.use(bodyParser.json());                                 // for parsing application/json
+app.use(bodyParser.urlencoded({ extended: true }));         // for parsing application/x-www-form-urlencoded
+app.use(express.static(path.join(__dirname + '/static')));  // Static routes
+
+// Create ORM
+const sequelize = new Sequelize(config.Server.SQL_DB, config.Server.SQL_User, config.Server.SQL_Pass, {
+    host: config.Server.SQL_Host,
+    port: config.Server.SQL_Port,
+    dialect: 'mysql',
+    define: {
+        timestamps: false // Fixes a weird 'bug' with a column which we don't even have.
+    }
+});
+
+// Import all models
+const Users = sequelize.import(path.join(__dirname + '/../Database/models/Users.js'));
+const Alerts = sequelize.import(path.join(__dirname + '/../Database/models/Alerts.js'))
+const Clients = sequelize.import(path.join(__dirname + '/../Database/models/Clients.js'))
+const InitialAuthKeys = sequelize.import(path.join(__dirname + '/../Database/models/InitialAuthKeys.js'))
+const LogFiles = sequelize.import(path.join(__dirname + '/../Database/models/LogFiles.js'))
+const LogSeries = sequelize.import(path.join(__dirname + '/../Database/models/LogSeries.js'))
+const ServerStatus = sequelize.import(path.join(__dirname + '/../Database/models/ServerStatus.js'))
+
+// URL Routes
 app.get('/', function(req, res) {
     res.sendFile(path.join(__dirname + '/templates/index.html'));
 });
 
-// API points
+// API Routes
 app.post('/api/authenticate', function(req, res) {
-    console.log(req.body);
-    res.send(true);
+    if (req.body.AuthKey) {
+        console.log('Got authentication request:', req.body.AuthKey, 'from', req.connection.remoteAddress);
+    }
+    // Check with the database
+    InitialAuthKeys.findOne({
+        where: {
+            Key: req.body.AuthKey
+        }
+    }).then(InitialAuthKeys => {
+        if (InitialAuthKeys) {
+            console.log('Found something');
+        } else {
+            console.log('Not found!')
+        }
+    })
+
 });
 
 // Run WebUI

@@ -10,7 +10,7 @@ module.exports = function(sequelize, DataTypes) {
 		},
 		ClientID: {
 			type: DataTypes.INTEGER(11),
-			allowNull: true,
+			allowNull: false,
 			references: {
 				model: 'Clients',
 				key: 'ID'
@@ -18,19 +18,19 @@ module.exports = function(sequelize, DataTypes) {
 		},
 		Filename: {
 			type: DataTypes.STRING(255),
-			allowNull: true
+			allowNull: false
 		},
 		Filepath: {
 			type: DataTypes.STRING(255),
-			allowNull: true
+			allowNull: false
 		},
-		Retention: {
+		RetentionDays: {
 			type: DataTypes.INTEGER(11),
-			allowNull: true
+			allowNull: false
 		},
 		DateAdded: {
 			type: DataTypes.DATE,
-			allowNull: true,
+			allowNull: false,
 			defaultValue: sequelize.literal('CURRENT_TIMESTAMP')
 		}
 	}, {

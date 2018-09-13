@@ -9,7 +9,7 @@ console.log(__dirname);
 var config = JSON.parse(fs.readFileSync(path.join(__dirname + '/config.json'), 'utf8'));
 var scanArr = [];       // Gets populated by init(); An array of all the files and their metadata that need checking on.
 var loggedIn = null;    // Gets populated by boolean response from Authenticate();
-var data = {};        // Gets populated by init(); File the client uses to store small bits of data locally.
+var data = {};          // Gets populated by init(); File the client uses to store small bits of data locally.
 
 // Go round all the files and collect their file names, size, and other things we can add in
 // into a single big array of files that need scanning. Then we can just iterate over that.
@@ -65,18 +65,6 @@ function UpdateData() {
     fs.writeFileSync(path.join(__dirname + '/.data.json'), JSON.stringify(data));
 };
 
-// Function for hashing passwords
-function hashPassword(password) {
-    var salt = data.secretKey;
-    var iterations = 10000;
-    var hash = pbkdf2(password, salt, iterations);
-    return {
-        salt: salt,
-        hash: hash,
-        iterations: iterations
-    };
-};
-
 // Authenticates with server
 function Authenticate() {
     console.log('Authenticating...');
@@ -84,18 +72,11 @@ function Authenticate() {
         console.warn('[Critical] - LogSee credentials are still default. Please change them before I can continue.');
         process.exit();
     };
-    // If no secret key, generate one
-    if (!data.secretKey) {
-        crypto.randomBytes(48, function(err, buffer) {
-            data.secretKey = buffer.toString('hex');
-            UpdateData();
-        });
-    };
 
-    //Todo: Salt / MD5 all the login info and make a request to the server for authentication
+    // Ask if our AuthKey matches that of the servers
     var options = {
         url: 'http://127.0.0.1:1339/api/authenticate',
-        json: {'Username': config.Client.LogSee_Username, 'Password': hashPassword(config.Client.LogSee_Password)},
+        json: {'AuthKey': config.Client.LogSee_Key}
     };
     request.post(options);
 };

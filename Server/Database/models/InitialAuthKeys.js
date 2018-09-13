@@ -10,7 +10,7 @@ module.exports = function(sequelize, DataTypes) {
 		},
 		UserID: {
 			type: DataTypes.INTEGER(11),
-			allowNull: true,
+			allowNull: false,
 			references: {
 				model: 'Users',
 				key: 'ID'
@@ -18,20 +18,20 @@ module.exports = function(sequelize, DataTypes) {
 		},
 		Active: {
 			type: DataTypes.ENUM('Y','N'),
-			allowNull: true
+			allowNull: false
 		},
 		OneTimeUse: {
 			type: DataTypes.ENUM('Y','N'),
-			allowNull: true
+			allowNull: false
 		},
 		Key: {
 			type: DataTypes.STRING(255),
-			allowNull: true,
+			allowNull: false,
 			unique: true
 		},
 		DateCreated: {
 			type: DataTypes.DATE,
-			allowNull: true,
+			allowNull: false,
 			defaultValue: sequelize.literal('CURRENT_TIMESTAMP')
 		},
 		DateExpires: {

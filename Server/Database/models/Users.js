@@ -10,29 +10,29 @@ module.exports = function(sequelize, DataTypes) {
 		},
 		Live: {
 			type: DataTypes.ENUM('Y','N'),
-			allowNull: true,
+			allowNull: false,
 			defaultValue: 'Y'
 		},
 		Authority: {
 			type: DataTypes.INTEGER(11),
-			allowNull: true,
+			allowNull: false,
 			defaultValue: '1'
 		},
 		Username: {
 			type: DataTypes.STRING(255),
-			allowNull: true
+			allowNull: false
 		},
 		Hash: {
 			type: DataTypes.STRING(255),
-			allowNull: true
+			allowNull: false
 		},
 		Salt: {
 			type: DataTypes.STRING(255),
-			allowNull: true
+			allowNull: false
 		},
 		DateCreated: {
 			type: DataTypes.DATE,
-			allowNull: true,
+			allowNull: false,
 			defaultValue: sequelize.literal('CURRENT_TIMESTAMP')
 		},
 		Forename: {

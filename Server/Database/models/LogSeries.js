@@ -5,15 +5,12 @@ module.exports = function(sequelize, DataTypes) {
 		ID: {
 			type: DataTypes.INTEGER(11),
 			allowNull: false,
-			primaryKey: true
-		},
-		RetentionTime: {
-			type: DataTypes.INTEGER(11),
-			allowNull: false
+			primaryKey: true,
+			autoIncrement: true
 		},
 		LogFileID: {
 			type: DataTypes.INTEGER(11),
-			allowNull: true,
+			allowNull: false,
 			references: {
 				model: 'LogFiles',
 				key: 'ID'
@@ -21,11 +18,11 @@ module.exports = function(sequelize, DataTypes) {
 		},
 		Data: {
 			type: DataTypes.TEXT,
-			allowNull: true
+			allowNull: false
 		},
 		DateAdded: {
 			type: DataTypes.DATE,
-			allowNull: true,
+			allowNull: false,
 			defaultValue: sequelize.literal('CURRENT_TIMESTAMP')
 		}
 	}, {

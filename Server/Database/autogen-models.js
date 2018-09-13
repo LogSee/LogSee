@@ -9,6 +9,8 @@ var fs = require('fs')
 var path = require('path')
 var config = JSON.parse(fs.readFileSync(path.join(__dirname + '/../config.json'), 'utf8'));
 
+process.chdir(__dirname); // Pops all the models here
+
 var auto = new SequelizeAuto(config.Server.SQL_DB, config.Server.SQL_User, config.Server.SQL_Pass, {
     dialect: 'mysql',
     host: config.Server.SQL_Host,
@@ -17,7 +19,6 @@ var auto = new SequelizeAuto(config.Server.SQL_DB, config.Server.SQL_User, confi
 
 auto.run(function (err) {
   if (err) throw err;
-
   console.log(auto.tables); // table list
   console.log(auto.foreignKeys); // foreign key list
 });
