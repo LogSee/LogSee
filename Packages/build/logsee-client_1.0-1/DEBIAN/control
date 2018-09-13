@@ -1,7 +1,0 @@
-Package: logsee-client
-Version: 1.0-1
-Section: base
-Priority: optional
-Architecture: amd64
-Maintainer: LogSee <robert@ainsey11.com>
-Description: LogSee client that sends data to a central LogSee server, https://github.com/LogSee/LogSee
