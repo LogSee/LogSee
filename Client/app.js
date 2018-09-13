@@ -2,6 +2,7 @@ var childProcess = require('child_process')     // For launching the WebUI as a 
 var path = require('path')                      // For managing paths, ofcourse.
 var fs = require('fs')                          // Nodes file system
 var crypto = require('crypto')                  // For generating / encrypting bits n bobs
+var request = require('request')                // npm install request!
 
 // Variables
 console.log(__dirname);
@@ -64,6 +65,18 @@ function UpdateData() {
     fs.writeFileSync(path.join(__dirname + '/.data.json'), JSON.stringify(data));
 };
 
+// Function for hashing passwords
+function hashPassword(password) {
+    var salt = data.secretKey;
+    var iterations = 10000;
+    var hash = pbkdf2(password, salt, iterations);
+    return {
+        salt: salt,
+        hash: hash,
+        iterations: iterations
+    };
+};
+
 // Authenticates with server
 function Authenticate() {
     console.log('Authenticating...');
@@ -80,6 +93,11 @@ function Authenticate() {
     };
 
     //Todo: Salt / MD5 all the login info and make a request to the server for authentication
+    var options = {
+        url: 'http://127.0.0.1:1339/api/authenticate',
+        json: {'Username': config.Client.LogSee_Username, 'Password': hashPassword(config.Client.LogSee_Password)},
+    };
+    request.post(options);
 };
 
 // Iterates over the configured files and checks for file changes, reports them.
