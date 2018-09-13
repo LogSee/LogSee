@@ -14,13 +14,17 @@ USE `LogSee`;
 DROP TABLE IF EXISTS `Alerts`;
 CREATE TABLE IF NOT EXISTS `Alerts` (
   `AlertID` int(11) NOT NULL AUTO_INCREMENT,
+  `ClientID` int(11) NOT NULL,
   `TimeStamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `Severity` varchar(20) NOT NULL,
-  `ClientID` int(11) NOT NULL,
-  `LogMessage` longtext NOT NULL,
+  `LogMessage` int(11) DEFAULT NULL,
   `NotificationIssued` enum('Y','N') NOT NULL,
   `NotificationMethod` varchar(50) NOT NULL,
-  PRIMARY KEY (`AlertID`)
+  PRIMARY KEY (`AlertID`),
+  KEY `FK_Alerts_Users` (`ClientID`),
+  KEY `FK_Alerts_LogSeries` (`LogMessage`),
+  CONSTRAINT `FK_Alerts_LogSeries` FOREIGN KEY (`LogMessage`) REFERENCES `LogSeries` (`LogFileID`),
+  CONSTRAINT `FK_Alerts_Users` FOREIGN KEY (`ClientID`) REFERENCES `Users` (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Data exporting was unselected.
