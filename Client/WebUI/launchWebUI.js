@@ -21,5 +21,7 @@ app.get('/status', function(req, res) {
     res.sendFile(path.join(__dirname + '/views/status.html')); 
 });
 // Run WebUI
-app.listen(config.WebUI.Port, config.WebUI.IP);
+module.exports = {
+    WebUI: app
+}
 console.log(`WebUI listening on http://${config.WebUI.IP}:${config.WebUI.Port}.`);

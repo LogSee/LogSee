@@ -51,7 +51,7 @@ function Init() {
 
     // Launch the webUI as a child if configured
     if (config.WebUI.Enabled) {
-        childProcess.fork(path.join(__dirname + '/WebUI/launchWebUI.js'));
+        require(__dirname + '/WebUI/launchWebUI.js').WebUI.listen(config.WebUI.Port, config.WebUI.IP);
     };
     console.log('Client Initialized.');
     Authenticate(); // Login to the server
