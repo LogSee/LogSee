@@ -14,8 +14,8 @@ module.exports = {
 
 		if (config.Email.Enabled) {
 			if (config.Email.DirectSend) {
-				var mail = require("nodemailer").mail;
-				mail({
+				//var mail = require("nodemailer").mail; // Not needed due to line 1
+				nodemailer.mail({
 					from: FromAddress,
 					to: Recipient,
 					subject: Subject,
@@ -24,12 +24,12 @@ module.exports = {
 			};
 			if (!config.Email.DirectSend) {
 				var SmtpTransport = nodemailer.createTransport("SMTP", {
-					host: SmtpServer,
-					secureConnection: SmtpSSL,
-					port: SmtpPort,
-					auth: {
-					user: Username,
-					pass: Password
+						host: SmtpServer,
+						secureConnection: SmtpSSL,
+						port: SmtpPort,
+						auth: {
+						user: Username,
+						pass: Password
 					}
 				});
 				var MailOptions = {
@@ -40,9 +40,9 @@ module.exports = {
 				};
 				SmtpTransport.sendMail(MailOptions, function(error, response) {
 					if (error) {
-					console.log(error);
+						console.log(error);
 					} else {
-					console.log("Email Message Sent")
+						console.log("Email Message Sent")
 					}
 					SmtpTransport.close();
 				});
