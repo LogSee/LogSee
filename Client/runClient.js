@@ -125,11 +125,10 @@ function ScanFiles() {
     setInterval(function() {
         // Iterate over each file
         for (var f = 0; f < filesArray.length; f++) {
-            tf = filesArray[f]; // This File (tf)
             // If the byte size != the previously logged byte size for that item, read it.
-            if (fs.statSync(tf.Location).size != tf.size) {
-                tf.size = fs.statSync(tf.Location).size; // Update its file size
-                console.log(`New file size detected on file "${tf.filename}"`);
+            if (fs.statSync(filesArray[f].filepath).size != filesArray[f].size) {
+                filesArray[f].size = fs.statSync(filesArray[f].filepath).size; // Update its file size
+                console.log(`New file size detected on file "${filesArray[f].filepath}"`);
                 // Todo: IF Metadata.lastLineSent, send from that line
             };
         };
