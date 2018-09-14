@@ -10,7 +10,7 @@
     },
     "WebUI": {
         "Enabled": true,
-        "Port": 1337,
+        "Port": 8337,
         "IP": "0.0.0.0",
         "RequireAuth": true,
         "AuthUser": "admin",
