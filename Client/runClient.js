@@ -1,37 +1,33 @@
-var childProcess = require('child_process')     // For launching the WebUI as a child process of client.
 var path = require('path')                      // For managing paths, ofcourse.
 var fs = require('fs')                          // Nodes file system
-var crypto = require('crypto')                  // For generating / encrypting bits n bobs
 var request = require('request')                // npm install request!
 
 // Variables
-console.log(__dirname);
 var config = JSON.parse(fs.readFileSync(path.join(__dirname + '/config.json'), 'utf8'));
-var scanArr = [];       // Gets populated by init(); An array of all the files and their metadata that need checking on.
+var filesArray = [];       // Gets populated by init(); An array of all the files and their metadata that need checking on.
 var data = {};          // Gets populated by init(); File the client uses to store small bits of data locally.
+
+// Grabs split up metadata such as file name, ext, size, location and returns as dict
+function getFileMetadata(filePath) {
+    return {
+        filename: path.basename(filePath),
+        filePath: filePath,
+        size: fs.statSync(filePath).size
+    };
+};
 
 // Go round all the files and collect their file names, size, and other things we can add in
 // into a single big array of files that need scanning. Then we can just iterate over that.
 function Init() {
     console.log('Client Initializing...');
-
-    for (var f = 0; f < config['PathsToScan'].length; f++) { // For every config entry
-        if (fs.existsSync(config.PathsToScan[f].Location)) { // If the file or dir exists
-            var tfd = config.PathsToScan[f] // This file or dir  (tf)
-            if (fs.lstatSync(tfd.Location).isFile()) { // If it's a file we're looking at
-                // Populate all its data and push it
-                tfd.filename = path.basename(tfd.Location);
-                tfd.size = fs.statSync(tfd.Location).size;
-                scanArr.push(tfd);
-            } else if (fs.lstatSync(tfd.Location).isDirectory()) { // Elif its a dir
-                fs.readdirSync(tfd.Location).forEach(function(filename) { // for every item in dir
-                    if (path.extname(filename) == ".log") { // If it's a .log and nothing but a .log file, append
-                        // Populate all its data and push it
-                        var output = Object.create(tfd); // Make a copy to prevent recursivly adding to its self
-                        output.filename = filename;
-                        output.Location = output.Location + filename;
-                        output.size = fs.statSync(output.Location).size;
-                        scanArr.push(output);
+    for (var f = 0; f < config['PathsToScan'].length; f++) {                                            // For every config entry
+        if (fs.existsSync(config.PathsToScan[f].Location)) {                                            // If the file or dir exists
+            if (fs.lstatSync(config.PathsToScan[f].Location).isFile()) {                                // If it's a file we're looking at
+                filesArray.push(getFileMetadata(config.PathsToScan[f].Location));                       // Populate and push
+            } else if (fs.lstatSync(config.PathsToScan[f].Location).isDirectory()) {                    // Elif its a dir
+                fs.readdirSync(config.PathsToScan[f].Location).forEach(function(filename) {             // for every item in dir
+                    if (path.extname(filename) == ".log") {                                             // If it's a .log and nothing but a .log file
+                        filesArray.push(getFileMetadata(config.PathsToScan[f].Location + filename));    // Populate and push
                     };
                 });
             } else {
@@ -41,8 +37,6 @@ function Init() {
             console.warn(`[Warning] The file "${config.PathsToScan[f].Location}" does not exist!`);
         };
     };
-
-    //Todo: For every file pushed to the array, check if they exist in the database, if so, populate metadataa such as how many lines the database holds compared to the file
 
     // Do we have a .data.json file for storing some of our stuff in?
     if (fs.existsSync(path.join(__dirname + '/.data.json'))) {
@@ -100,7 +94,7 @@ function Authenticate() {
                 console.log('Client successfully authenticated.')
                 Pinger();
                 // Send all these files to the API to ensure they're in the DB
-                request.post({url: 'http://127.0.0.1:1339/api/addfiles', json: {"Data": scanArr, "UniqueKey": data.UniqueKey}}, function(err, response, body) {
+                request.post({url: 'http://127.0.0.1:1339/api/addfiles', json: {"Data": filesArray, "UniqueKey": data.UniqueKey}}, function(err, response, body) {
                     if (response.statusCode == 200) {
                         ScanFiles();
                     };
@@ -126,14 +120,12 @@ function Authenticate() {
     };
 };
 
-
-
 // Iterates over the configured files and checks for file changes, reports them.
 function ScanFiles() {
     setInterval(function() {
         // Iterate over each file
-        for (var f = 0; f < scanArr.length; f++) {
-            tf = scanArr[f]; // This File (tf)
+        for (var f = 0; f < filesArray.length; f++) {
+            tf = filesArray[f]; // This File (tf)
             // If the byte size != the previously logged byte size for that item, read it.
             if (fs.statSync(tf.Location).size != tf.size) {
                 tf.size = fs.statSync(tf.Location).size; // Update its file size

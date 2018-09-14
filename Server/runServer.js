@@ -123,7 +123,6 @@ app.post('/api/addfiles', function(req, res) {
 
     checkClient(req.body.UniqueKey, function(record) {
         if (record) {
-            console.log('RECORD');
             for (let i = 0; i < req.body.Data.length; i++) { // `let` makes the loop run syncronously instead of asynchronously.
                 LogFiles.findOne({
                     where: {
@@ -148,7 +147,6 @@ app.post('/api/addfiles', function(req, res) {
             };
             res.status(200).send();
         } else {
-            console.log('NO RECORD');
             res.status(403).send({"Message": "The specified UniqueKey was incorrect or this client is no longer marked as active."});
         };
     });
@@ -156,7 +154,7 @@ app.post('/api/addfiles', function(req, res) {
 
 
 // Helper functions
-function checkClient(TUniqueKey, callback) { // Checks if the client is live and valid via unqiue key
+function checkClient(TUniqueKey, callback) { // Checks if the client is live and valid via unqiue key, will return client data if so, false if not.
     Clients.findOne({
         where: {
             UniqueKey: TUniqueKey,
