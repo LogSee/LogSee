@@ -46,7 +46,6 @@ function Init() {
 
     // Do we have a .data.json file for storing some of our stuff in?
     if (fs.existsSync(path.join(__dirname + '/.data.json'))) {
-        console.log('Data file exists');
         data = JSON.parse(fs.readFileSync(path.join(__dirname + '/.data.json'), 'utf8'));
     };
 
@@ -56,8 +55,6 @@ function Init() {
     };
     console.log('Client Initialized.');
     Authenticate(); // Login to the server
-    Pinger(); // Launch the pinger to let the server know we're still alive
-    ScanFiles();
 };
 
 // Keeps the data file up to date when changing the data variable
@@ -69,20 +66,51 @@ function UpdateData() {
 function Authenticate() {
     console.log('Authenticating...');
     if (config.Client.LogSee_Username == "admin" || config.Client.LogSee_Password == "admin") {
-        console.warn('[Critical] - LogSee credentials are still default. Please change them before I can continue.');
+        console.warn('[Critical] - LogSee credentials are still default. Please change them before running the client.');
         process.exit();
     };
 
     // Ask if our AuthKey matches that of the servers
-    if (!data.UniqueKey) {
+    if (config.Client.LogSee_Key && !data.UniqueKey) {
+        console.log('Registering client for first time authentication...');
         var options = {
             url: 'http://127.0.0.1:1339/api/authenticate',
             json: {'AuthKey': config.Client.LogSee_Key}
         };
         request.post(options, function(err, response, body) {
-            console.log(body);
+            // If success
+            if (response.statusCode == 200) {
+                console.log(response.statusCode, body.Message);
+                data.UniqueKey = body.UniqueKey;
+                UpdateData();
+            } else { // If unsuccess (due to errors or failed key)
+                console.log(response.statusCode, body.Message)
+            }
         });
-    }
+    } else if (data.UniqueKey && config.Client.LogSee_Key) { // We have an auth + unique key
+        console.log('Client already registered... Checking status...');
+        var options = {
+            url: 'http://127.0.0.1:1339/api/authenticate',
+            json: {'AuthKey': config.Client.LogSee_Key, 'UniqueKey': data.UniqueKey}
+        };
+        request.post(options, function(err, response, body) {
+            console.log(response.statusCode, body.Message);
+            if (response.statusCode == 200) {
+                console.log('Client successfully authenticated.')
+                Pinger();
+                ScanFiles();
+            } else if (response.statusCode == 404) { // No unqiue key record was found, generate a new one
+                data.UniqueKey = null;
+                UpdateData();
+                console.log('Server did not recognize us. A new UniqueKey has been generated and attemping re-authentication.')
+                Authenticate();
+            };
+            // else process.exit(); ? Or have it run every x seconds if status is 401 (still awaiting approval)
+        });
+    } else {
+        console.log('Unable to authenticate with the server as no LogSee_Key has been given.\nPlease create a key via the server dashboard and insert it into the config file.')
+        process.exit();
+    };
 };
 
 // Iterates over the configured files and checks for file changes, reports them.
