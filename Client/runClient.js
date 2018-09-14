@@ -8,7 +8,6 @@ var request = require('request')                // npm install request!
 console.log(__dirname);
 var config = JSON.parse(fs.readFileSync(path.join(__dirname + '/config.json'), 'utf8'));
 var scanArr = [];       // Gets populated by init(); An array of all the files and their metadata that need checking on.
-var loggedIn = null;    // Gets populated by boolean response from Authenticate();
 var data = {};          // Gets populated by init(); File the client uses to store small bits of data locally.
 
 // Go round all the files and collect their file names, size, and other things we can add in
@@ -104,6 +103,13 @@ function Authenticate() {
                 UpdateData();
                 console.log('Server did not recognize us. A new UniqueKey has been generated and attemping re-authentication.')
                 Authenticate();
+            } else if (response.statusCode == 403) { // Denied. Stop asking.
+                process.exit();
+            } else if (response.statusCode == 401) { // Awaiting approval
+                console.log('Waiting 30s to try again...');
+                setTimeout(function() {
+                    Authenticate();
+                }, 30000) // Check again every 30 seconds
             };
             // else process.exit(); ? Or have it run every x seconds if status is 401 (still awaiting approval)
         });
@@ -112,6 +118,10 @@ function Authenticate() {
         process.exit();
     };
 };
+
+// Goes through all the files to scan and ensure they're in the database
+function somestuff() {}
+
 
 // Iterates over the configured files and checks for file changes, reports them.
 function ScanFiles() {
