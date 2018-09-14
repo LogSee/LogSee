@@ -16,11 +16,13 @@
     },
    "Email": {
       "Enabled": true,
+      "DirectSend" : true,
       "SmtpServer":"smptp.potato.onion.com",
       "SmtpPort": "25",
+      "SmtpSSL" : false,
       "Username": "lolz",
       "Password": "md5hashieofiliketrains",
-      "FromAddress": "erhmahgherd@logsee.io"
+      "FromAddress": "erhmahgherd@logsee.io"     
    },
    "Notifications": {
       "Simplepush": {
