@@ -28,6 +28,11 @@ module.exports = function(sequelize, DataTypes) {
 			type: DataTypes.INTEGER(11),
 			allowNull: false
 		},
+		Size: {
+			type: DataTypes.INTEGER(11),
+			allowNull: false,
+			defaultValue: '0'
+		},
 		DateAdded: {
 			type: DataTypes.DATE,
 			allowNull: false,
