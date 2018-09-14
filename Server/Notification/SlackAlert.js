@@ -10,12 +10,12 @@ module.exports = {
             var LogSeeURL = config.WebUI.IP + ':' + config.WebUI.Port
             var headers = {"Content-type": 'application/json'};
             var payload = {
-            "text": Message,
+            "text": "LogSee Alert",
             "attachments": [
                 {
-                    "text": "View on LogSee",
+                    "text": Message,
                     "fallback": "View on Logsee",
-                    "color": "#3AA3E3",
+                    "color": "#ff0000",
                     "attachment_type": "default",
                     "actions": [
                         {
@@ -23,7 +23,7 @@ module.exports = {
                             "text": "Open Logsee Web Panel",
                             "type": "button",
                             "value": "Open LogSee Web Panel",
-                            "url": "http://LogSeeURL"
+                            "url": "http://LogSeeURL.com/panel"
                         }
                     ]
                 }

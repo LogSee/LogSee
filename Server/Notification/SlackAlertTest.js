@@ -3,4 +3,4 @@ var test = require(path.join(__dirname + '/SlackAlert.js'));
 
 
 console.log(typeof test.SendSlackNotification);
-test.SendSlackNotification("Test");
+test.SendSlackNotification("I like trains lololol");
