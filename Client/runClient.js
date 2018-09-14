@@ -8,11 +8,11 @@ var filesArray = [];       // Gets populated by init(); An array of all the file
 var data = {};          // Gets populated by init(); File the client uses to store small bits of data locally.
 
 // Grabs split up metadata such as file name, ext, size, location and returns as dict
-function getFileMetadata(filePath) {
+function getFileMetadata(filepath) {
     return {
-        filename: path.basename(filePath),
-        filePath: filePath,
-        size: fs.statSync(filePath).size
+        filename: path.basename(filepath),
+        filepath: filepath,
+        size: fs.statSync(filepath).size
     };
 };
 
