@@ -14,24 +14,14 @@ var data = {};          // Gets populated by init(); File the client uses to sto
 // into a single big array of files that need scanning. Then we can just iterate over that.
 function Init() {
     console.log('Client Initializing...');
-
-    for (var f = 0; f < config['PathsToScan'].length; f++) { // For every config entry
-        if (fs.existsSync(config.PathsToScan[f].Location)) { // If the file or dir exists
-            var tfd = config.PathsToScan[f] // This file or dir  (tf)
-            if (fs.lstatSync(tfd.Location).isFile()) { // If it's a file we're looking at
-                // Populate all its data and push it
-                tfd.filename = path.basename(tfd.Location);
-                tfd.size = fs.statSync(tfd.Location).size;
-                scanArr.push(tfd);
-            } else if (fs.lstatSync(tfd.Location).isDirectory()) { // Elif its a dir
-                fs.readdirSync(tfd.Location).forEach(function(filename) { // for every item in dir
-                    if (path.extname(filename) == ".log") { // If it's a .log and nothing but a .log file, append
-                        // Populate all its data and push it
-                        var output = Object.create(tfd); // Make a copy to prevent recursivly adding to its self
-                        output.filename = filename;
-                        output.Location = output.Location + filename;
-                        output.size = fs.statSync(output.Location).size;
-                        scanArr.push(output);
+    for (var f = 0; f < config['PathsToScan'].length; f++) {                                            // For every config entry
+        if (fs.existsSync(config.PathsToScan[f].Location)) {                                            // If the file or dir exists
+            if (fs.lstatSync(config.PathsToScan[f].Location).isFile()) {                                // If it's a file we're looking at
+                filesArray.push(getFileMetadata(config.PathsToScan[f].Location));                       // Populate and push
+            } else if (fs.lstatSync(config.PathsToScan[f].Location).isDirectory()) {                    // Elif its a dir
+                fs.readdirSync(config.PathsToScan[f].Location).forEach(function(filename) {             // for every item in dir
+                    if (path.extname(filename) == ".log") {                                             // If it's a .log and nothing but a .log file
+                        filesArray.push(getFileMetadata(config.PathsToScan[f].Location + filename));    // Populate and push
                     };
                 });
             } else {
