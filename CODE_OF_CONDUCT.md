@@ -13,6 +13,9 @@ Examples of behavior that contributes to creating a positive environment include
 * Gracefully accepting constructive criticism
 * Focusing on what is best for the community
 * Showing empathy towards other community members
+* Don't be salty if we don't merge your commit
+* Don't spam us, we'll just ignore you
+* Have fun!
 
 Examples of unacceptable behavior by participants include:
 
