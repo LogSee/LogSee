@@ -1,4 +1,5 @@
 var nodemailer = require('nodemailer');
+var smtpTransport = require('nodemailer-smtp-transport');
 var fs = require('fs');
 var path = require('path');
 
@@ -13,39 +14,29 @@ module.exports = {
 		var Password = config.Email.Password;
 
 		if (config.Email.Enabled) {
-			if (config.Email.DirectSend) {
-				nodemailer.mail({
-					from: FromAddress,
-					to: Recipient,
-					subject: Subject,
-					text: Body
-				});
-			};
-			if (!config.Email.DirectSend) {
-				var SmtpTransport = nodemailer.createTransport("SMTP", {
-						host: SmtpServer,
-						secureConnection: SmtpSSL,
-						port: SmtpPort,
-						auth: {
-						user: Username,
-						pass: Password
-					}
-				});
-				var MailOptions = {
-					from: FromAddress,
-					to: Recipient,
-					subject: Subject,
-					text: Body
+			var SmtpTransport = nodemailer.createTransport(smtpTransport, {
+				host: SmtpServer,
+				secureConnection: SmtpSSL,
+				port: SmtpPort,
+				auth: {
+				  user: Username,
+				  pass: Password
+				}
+			  });
+			var MailOptions = {
+				from: FromAddress,
+				to: Recipient,
+				subject: Subject,
+				text: Body
 				};
-				SmtpTransport.sendMail(MailOptions, function(error, response) {
-					if (error) {
-						console.log(error);
-					} else {
-						console.log("Email Message Sent")
-					}
-					SmtpTransport.close();
+			SmtpTransport.sendMail(MailOptions, function(error, response) {
+				if (error) {
+					console.log(error);
+				} else {
+					console.log("Email Message Sent")
+				}
+				SmtpTransport.close();
 				});
 			}
 		}
 	}
-}
