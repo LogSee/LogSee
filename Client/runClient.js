@@ -133,9 +133,8 @@ function ScanFiles() {
 // Lets the server know every config.Client.PingInterval seconds if it's still alive
 function Pinger() {
     setInterval(function() {
-        // Todo: Send http request to a server api point
-        // Todo: make the API endpoint which takes this type of ping request
+        request.post({url: 'http://127.0.0.1:1339/api/pingpong', json: {'UniqueKey': data.UniqueKey} });
     }, config.Client.PingInterval * 1000)
-}
+};
 
 Init(); // Run

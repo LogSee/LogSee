@@ -10,12 +10,12 @@ var fs = require('fs');
 
 // Create express app
 let app = new express();
-var config = JSON.parse(fs.readFileSync(path.join(__dirname + '/../config.json'), 'utf8'));
+var config = JSON.parse(fs.readFileSync(path.join(__dirname + '/config.json'), 'utf8'));
 
 // Setup a post body parser because for some stupid reason this isn't default
 app.use(bodyParser.json());                                 // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true }));         // for parsing application/x-www-form-urlencoded
-app.use(express.static(path.join(__dirname + '/static')));  // Static routes
+app.use(express.static(path.join(__dirname + '/WebUI/static')));  // Static routes
 
 // Create ORM
 const sequelize = new Sequelize(config.Server.SQL_DB, config.Server.SQL_User, config.Server.SQL_Pass, {
@@ -28,17 +28,17 @@ const sequelize = new Sequelize(config.Server.SQL_DB, config.Server.SQL_User, co
 });
 
 // Import all models
-const Users = sequelize.import(path.join(__dirname + '/../Database/models/Users.js'));
-const Alerts = sequelize.import(path.join(__dirname + '/../Database/models/Alerts.js'))
-const Clients = sequelize.import(path.join(__dirname + '/../Database/models/Clients.js'))
-const InitialAuthKeys = sequelize.import(path.join(__dirname + '/../Database/models/InitialAuthKeys.js'))
-const LogFiles = sequelize.import(path.join(__dirname + '/../Database/models/LogFiles.js'))
-const LogSeries = sequelize.import(path.join(__dirname + '/../Database/models/LogSeries.js'))
-const ServerStatus = sequelize.import(path.join(__dirname + '/../Database/models/ServerStatus.js'))
+const Users = sequelize.import(path.join(__dirname + '/Database/models/Users.js'));
+const Alerts = sequelize.import(path.join(__dirname + '/Database/models/Alerts.js'))
+const Clients = sequelize.import(path.join(__dirname + '/Database/models/Clients.js'))
+const InitialAuthKeys = sequelize.import(path.join(__dirname + '/Database/models/InitialAuthKeys.js'))
+const LogFiles = sequelize.import(path.join(__dirname + '/Database/models/LogFiles.js'))
+const LogSeries = sequelize.import(path.join(__dirname + '/Database/models/LogSeries.js'))
+const ServerStatus = sequelize.import(path.join(__dirname + '/Database/models/ServerStatus.js'))
 
 // URL Routes
 app.get('/', function(req, res) {
-    res.sendFile(path.join(__dirname + '/templates/index.html'));
+    res.sendFile(path.join(__dirname + '/WebUI/templates/index.html'));
 });
 
 // API Routes
@@ -99,6 +99,20 @@ app.post('/api/authenticate', function(req, res) {
                 res.status(403).send({"Message": "Incorrect Authentication Key."});
             };
         });
+    };
+});
+
+app.post('/api/pingpong', function(req, res) {
+    // Updates the client table with a timestamp of request, used to check if a client is offline due to no response in x minutes.
+    res.setHeader('Content-Type', 'application/json'); // Make all our responses json format
+    if (req.body.UniqueKey) {
+        Clients.update(
+            {LastPing: Date.now()}, 
+            {where: {UniqueKey: req.body.UniqueKey}}
+        );
+        res.status(200).send({"Message": "Pong"});
+    } else {
+        res.status(400).send({"Message": "No UniqueKey specified."})
     };
 });
 
