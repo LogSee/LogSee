@@ -27,10 +27,11 @@ function Init() {
                 fs.readdirSync(tfd.Location).forEach(function(filename) { // for every item in dir
                     if (path.extname(filename) == ".log") { // If it's a .log and nothing but a .log file, append
                         // Populate all its data and push it
-                        tfd.filename = filename;
-                        tfd.Location = tfd.Location + filename;
-                        tfd.size = fs.statSync(tfd.Location).size;
-                        scanArr.push(tfd);
+                        var output = Object.create(tfd); // Make a copy to prevent recursivly adding to its self
+                        output.filename = filename;
+                        output.Location = output.Location + filename;
+                        output.size = fs.statSync(output.Location).size;
+                        scanArr.push(output);
                     };
                 });
             } else {
@@ -82,6 +83,7 @@ function Authenticate() {
                 console.log(response.statusCode, body.Message);
                 data.UniqueKey = body.UniqueKey;
                 UpdateData();
+                Authenticate();
             } else { // If unsuccess (due to errors or failed key)
                 console.log(response.statusCode, body.Message)
             }
@@ -97,7 +99,13 @@ function Authenticate() {
             if (response.statusCode == 200) {
                 console.log('Client successfully authenticated.')
                 Pinger();
-                ScanFiles();
+                // Send all these files to the API to ensure they're in the DB
+                request.post({url: 'http://127.0.0.1:1339/api/addfiles', json: {"Data": scanArr, "UniqueKey": data.UniqueKey}}, function(err, response, body) {
+                    if (response.statusCode == 200) {
+                        ScanFiles();
+                    };
+                });
+                
             } else if (response.statusCode == 404) { // No unqiue key record was found, generate a new one
                 data.UniqueKey = null;
                 UpdateData();
@@ -111,7 +119,6 @@ function Authenticate() {
                     Authenticate();
                 }, 30000) // Check again every 30 seconds
             };
-            // else process.exit(); ? Or have it run every x seconds if status is 401 (still awaiting approval)
         });
     } else {
         console.log('Unable to authenticate with the server as no LogSee_Key has been given.\nPlease create a key via the server dashboard and insert it into the config file.')
@@ -119,8 +126,6 @@ function Authenticate() {
     };
 };
 
-// Goes through all the files to scan and ensure they're in the database
-function somestuff() {}
 
 
 // Iterates over the configured files and checks for file changes, reports them.
@@ -136,7 +141,7 @@ function ScanFiles() {
                 // Todo: IF Metadata.lastLineSent, send from that line
             };
         };
-    }, config.Client.ScanFrequency) // Wait the ScanFrequency value
+    }, config.Client.ScanFrequency) // Wait the ScanFrequency value, more of a safety than anything
     console.log(`Client is running.`);
 };
 
@@ -144,7 +149,7 @@ function ScanFiles() {
 function Pinger() {
     setInterval(function() {
         request.post({url: 'http://127.0.0.1:1339/api/pingpong', json: {'UniqueKey': data.UniqueKey} });
-    }, config.Client.PingInterval * 1000)
+    }, config.Client.PingInterval * 1000);
 };
 
 Init(); // Run

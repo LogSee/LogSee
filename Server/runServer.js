@@ -116,6 +116,63 @@ app.post('/api/pingpong', function(req, res) {
     };
 });
 
+app.post('/api/addfiles', function(req, res) {
+    res.setHeader('Content-Type', 'application/json'); // Make all our responses json format
+    console.log(req.body.Data);
+    console.log(req.body.Data.length);
+
+    checkClient(req.body.UniqueKey, function(record) {
+        if (record) {
+            console.log('RECORD');
+            for (let i = 0; i < req.body.Data.length; i++) { // `let` makes the loop run syncronously instead of asynchronously.
+                LogFiles.findOne({
+                    where: {
+                        Filename: req.body.Data[i].filename,
+                        $and: {Filepath: req.body.Data[i].Location},
+                        $and: {ClientID: record.ID}
+                    }
+                }).then(result => {
+                    if (result) {
+                        console.log(`Skipping ${req.body.Data[i].filename} as it's already in database.`);
+                    } else {
+                        console.log(`Adding ${req.body.Data[0].filename} to database...`);
+                        LogFiles.build({
+                            ClientID: record.ID,
+                            Filename: req.body.Data[i].filename,
+                            Filepath: req.body.Data[i].Location,
+                            RetentionDays: 30,
+                            Size: req.body.Data[i].size
+                        }).save();
+                    };
+                });
+            };
+            res.status(200).send();
+        } else {
+            console.log('NO RECORD');
+            res.status(403).send({"Message": "The specified UniqueKey was incorrect or this client is no longer marked as active."});
+        };
+    });
+});
+
+
+// Helper functions
+function checkClient(TUniqueKey, callback) { // Checks if the client is live and valid via unqiue key
+    Clients.findOne({
+        where: {
+            UniqueKey: TUniqueKey,
+            $and: {Live: 'Y'}
+        }
+    }).then(record => {
+        if (record) {
+            return callback(record);
+        } else {
+            return callback(false);
+        };
+    });
+};
+
+
 // Run WebUI
 app.listen(config.WebUI.Port, config.WebUI.IP);
 console.log(`WebUI listening on http://${config.WebUI.IP}:${config.WebUI.Port}.`);
+ 
