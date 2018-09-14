@@ -14,7 +14,6 @@ module.exports = {
 
 		if (config.Email.Enabled) {
 			if (config.Email.DirectSend) {
-				//var mail = require("nodemailer").mail; // Not needed due to line 1
 				nodemailer.mail({
 					from: FromAddress,
 					to: Recipient,
