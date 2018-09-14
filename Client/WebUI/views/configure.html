@@ -58,57 +58,13 @@
                     <label class="ml-1">Enable Client Side Filtering</label>
                 </div>
             </div>
+            <hr/>
             <div class="form-group row">
                 <div class="col-sm-2">
                     <input type="number" class="form-control" id="ClientScanFreq" placeholder="5000">
                 </div>
                 <div class="col col-form-label pl-0">
                     <label for="ClientScanFreq">Client Scan Frequency (ms)</label>
-                </div>
-            </div>
-
-            <div class="form-group row">
-                <div class="col-sm-5">
-                    <input type="number" class="form-control" id="LogSee_Host" placeholder="172.16.1.69">
-                </div>
-                <div class="col col-form-label pl-0">
-                    <label for="LogSee_Host">LogSee Central Server Hostname / IP</label>
-                </div>
-            </div>
-
-            <div class="form-group row">
-                <div class="col-sm-2">
-                    <input type="number" class="form-control" id="LogSee_Port" placeholder="1338">
-                </div>
-                <div class="col col-form-label pl-0">
-                    <label for="LogSee_Port">LogSee Central Server Port</label>
-                </div>
-            </div>
-
-            <div class="form-group row">
-                <div class="col-sm-4">
-                    <input type="text" class="form-control" id="LogSee_Username" placeholder="admin">
-                </div>
-                <div class="col col-form-label pl-0">
-                    <label for="LogSee_Username">LogSee Central Server Username</label>
-                </div>
-            </div>
-
-            <div class="form-group row">
-                <div class="col-sm-4">
-                    <input type="password" class="form-control" id="LogSee_Password" placeholder="">
-                </div>
-                <div class="col col-form-label pl-0">
-                    <label for="LogSee_Password">LogSee Central Server Password</label>
-                </div>
-            </div>
-
-            <div class="form-group row">
-                <div class="col-sm-5">
-                    <input type="number" class="form-control" id="LogSee_Key" placeholder="f876f98ds9f8s6d98df9g869fdhdfh">
-                </div>
-                <div class="col col-form-label pl-0">
-                    <label for="LogSee_Key">LogSee Auth Key</label>
                 </div>
             </div>
             <div class="form-group row">
@@ -119,5 +75,46 @@
                         <label for="PingInterval">Client Ping Interval</label>
                     </div>
             </div>
+            <hr/>
+            <h6>Central Server Details:</h5>
+            <div class="form-group row">
+                <div class="col-sm-5">
+                    <input type="number" class="form-control" id="LogSee_Host" placeholder="172.16.1.69">
+                </div>
+                <div class="col col-form-label pl-1">
+                    <label for="LogSee_Host">IP</label>
+                </div>
+            <div class="form-group row">
+                <div class="col-sm-3">
+                    <input type="number" class="form-control" id="LogSee_Port" placeholder="1338">
+                </div>
+                <div class="col col-form-label pl-1">
+                    <label for="LogSee_Port">Port</label>
+                </div>
+            </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-3">
+                    <input type="text" class="form-control" id="LogSee_Username" placeholder="admin">
+                </div>
+                <div class="col col-form-label pl-1">
+                    <label for="LogSee_Username">Username</label>
+                </div>
+                <div class="col-sm-3">
+                    <input type="password" class="form-control" id="LogSee_Password" placeholder="">
+                </div>
+                <div class="col col-form-label pl-1">
+                    <label for="LogSee_Password">Password</label>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-5">
+                    <input type="text" class="form-control" id="LogSee_Key" placeholder="f876f98ds9f8s6d98df9g869fdhdfh">
+                </div>
+                <div class="col col-form-label pl-0">
+                    <label for="LogSee_Key">Authorization Key</label>
+                </div>
+            </div>
+            
         </form>
       </body>
