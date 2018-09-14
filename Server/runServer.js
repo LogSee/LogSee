@@ -118,16 +118,13 @@ app.post('/api/pingpong', function(req, res) {
 
 app.post('/api/addfiles', function(req, res) {
     res.setHeader('Content-Type', 'application/json'); // Make all our responses json format
-    console.log(req.body.Data);
-    console.log(req.body.Data.length);
-
     checkClient(req.body.UniqueKey, function(record) {
         if (record) {
             for (let i = 0; i < req.body.Data.length; i++) { // `let` makes the loop run syncronously instead of asynchronously.
                 LogFiles.findOne({
                     where: {
                         Filename: req.body.Data[i].filename,
-                        $and: {Filepath: req.body.Data[i].Location},
+                        $and: {Filepath: req.body.Data[i].filepath},
                         $and: {ClientID: record.ID}
                     }
                 }).then(result => {
@@ -138,7 +135,7 @@ app.post('/api/addfiles', function(req, res) {
                         LogFiles.build({
                             ClientID: record.ID,
                             Filename: req.body.Data[i].filename,
-                            Filepath: req.body.Data[i].Location,
+                            Filepath: req.body.Data[i].filepath,
                             RetentionDays: 30,
                             Size: req.body.Data[i].size
                         }).save();
