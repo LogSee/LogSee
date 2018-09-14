@@ -149,6 +149,25 @@ app.post('/api/addfiles', function(req, res) {
     });
 });
 
+// Lists all the clients belonging to a user
+app.post('/api/listclients', function(req, res) {
+    res.setHeader('Content-Type', 'application/json'); // Make all our responses json format
+    checkClient(req.body.UniqueKey, function(record) {
+        if (record) {
+            Clients.findAll({
+                where: {
+                    UserID: record.UserID
+                }
+            }).then(result => {
+                if (result) {
+                    res.status(200).send({"UserID": record.UserID, "Message": result})
+                };
+            });
+        } else {
+            res.status(403).send({"Message": "The specified UniqueKey was incorrect or this client is no longer marked as active."});
+        };
+    });
+});
 
 // Helper functions
 function checkClient(TUniqueKey, callback) { // Checks if the client is live and valid via unqiue key, will return client data if so, false if not.
