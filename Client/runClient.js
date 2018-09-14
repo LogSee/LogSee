@@ -10,6 +10,15 @@ var config = JSON.parse(fs.readFileSync(path.join(__dirname + '/config.json'), '
 var scanArr = [];       // Gets populated by init(); An array of all the files and their metadata that need checking on.
 var data = {};          // Gets populated by init(); File the client uses to store small bits of data locally.
 
+// Grabs split up metadata such as file name, ext, size, location and returns as dict
+function getFileMetadata(filePath) {
+    return {
+        filename: path.basename(filePath),
+        filePath: filePath,
+        size: fs.statSync(filePath).size
+    };
+};
+
 // Go round all the files and collect their file names, size, and other things we can add in
 // into a single big array of files that need scanning. Then we can just iterate over that.
 function Init() {
