@@ -48,17 +48,23 @@
         <p>You can configure the LogSee client here. All values will take an instant effect. </p>
         <a href="https://github.com/LogSee/LogSee/wiki" target="_blank">Check out the Wiki for more information</a> 
         <br><br>
-        <div class="checkbox" style="padding-left:30px">
-            <label>
-                <input type="checkbox" data-toggle="toggle" data-onstyle="success" data-offstyle="danger">
-                    Enable Client Side Filtering
-            </label>
-        </div>
+
         <form>
-                <div class="form-group row">
-                  <label for="ClientScanFreq" class="col-sm-3 col-form-label">Client Scan Frequency (ms)</label>
-                  <div class="col-sm-1">
-                    <input type="number" class="form-control" id="ClientScanFreq" placeholder="">
-                  </div>
+            <div class="form-group row">
+                <div class="col-sm-1 pr-1">
+                    <input type="checkbox" data-toggle="toggle" data-onstyle="success" data-offstyle="danger">
                 </div>
+                <div class="col col-form-label pl-0">
+                    <label class="ml-1">Enable Client Side Filtering</label>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-1">
+                    <input type="number" class="form-control" id="ClientScanFreq" placeholder="">
+                </div>
+                <div class="col col-form-label pl-0">
+                    <label for="ClientScanFreq">Client Scan Frequency (ms)</label>
+                </div>
+            </div>
+        </form>
       </body>
