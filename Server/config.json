@@ -29,7 +29,7 @@
       },
       "Slack": {
           "Enabled" :true,
-          "SlackWebhookURL" : "https://hooks.slack.com/services/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"
+          "SlackWebhookURL" : "http://slackwebhookurl.seedocumentation.logsee.lolz"
       }
    }
 
