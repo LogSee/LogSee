@@ -6,6 +6,7 @@
 	    "LogSee_Port":          1338,
 	    "LogSee_Username":      "admin",
         "LogSee_Password":      "admin",
+        "LogSee_Key":           "f876f98ds9f8s6d98df9g869fdhdfh",
         "PingInterval":         300
     },
     "WebUI": {
@@ -18,10 +19,10 @@
     },
     "PathsToScan": [
         {
-            "Location": "C:\\Users\\Anon\\Documents\\GitHub\\LogSee\\Client\\sampleLogFile.log"
+            "Location": "C:\\Users\\Anon\\Documents\\GitHub\\LogSee\\DevTools\\sampleLog.log"
         },
         {
-            "Location": "I:\\BACKUP\\otherdump\\Memes\\"
+            "Location": "C:\\Users\\Anon\\Documents\\GitHub\\LogSee\\DevTools\\sampleLogs\\"
         }
     ]
 }
