@@ -1,5 +1,5 @@
 var path = require('path');
-var test = require(path.join(__dirname + '/AndroidPush.js'));
+var test = require(path.join(__dirname + '/../AndroidPush.js'));
 
 
 console.log(typeof test.SendAndroidPushNotification);
