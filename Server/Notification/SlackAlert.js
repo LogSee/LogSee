@@ -23,7 +23,7 @@ module.exports = {
                             "text": "Open Logsee Web Panel",
                             "type": "button",
                             "value": "Open LogSee Web Panel",
-                            "url": "http://LogSeeURL"
+                            "url": "http://LogSeeURL.com/panel"
                         }
                     ]
                 }
