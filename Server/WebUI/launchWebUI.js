@@ -2,6 +2,7 @@ console.log('Initializing WebUI...');
 var bodyParser = require('body-parser');    // npm install trash   ...oh wait no...    body-parser
 var Sequelize = require('sequelize');       // npm install sequelize, mysql2    (database ORM)
 var express = require('express');           // npm install express      (for serving web stuff)
+var crypto = require('crypto');              
 var path = require('path');
 var fs = require('fs');
 //var sqlite3 = require('sqlite3')          // npm install sqlite3      (for talking to sqlite3)
@@ -52,12 +53,32 @@ app.post('/api/authenticate', function(req, res) {
         }
     }).then(InitialAuthKeys => {
         if (InitialAuthKeys) {
-            console.log('Found something');
+            console.log('Client Authenticated');
+            var uk = crypto.randomBytes(48).toString('base64');
+            console.log(uk);
+
+            // Add its record to clients and that it's awaiting confirmation
+            const ClientRecord = Clients.build({
+                UserID: InitialAuthKeys.UserID,
+                IP: req.connection.remoteAddress,
+                InitialAuth: 'Awaiting Approval',
+                Live: 'N',
+                UniqueKey: uk
+            });
+            res.setHeader('Content-Type', 'application/json');
+            ClientRecord.save().then(ClientRecord => {
+                res.send({"Message": "Authentication Success. Awaiting User Approval.", "UniqueKey": uk});
+            }).catch(error =>{
+                res.send({"Message": "Issue contacting database."});
+                console.warn('[Warning] - Client Record did not commit!', error);
+            });
+   
+            
         } else {
             console.log('Not found!')
+            res.send(false);
         }
     })
-
 });
 
 // Run WebUI

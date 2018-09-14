@@ -74,11 +74,15 @@ function Authenticate() {
     };
 
     // Ask if our AuthKey matches that of the servers
-    var options = {
-        url: 'http://127.0.0.1:1339/api/authenticate',
-        json: {'AuthKey': config.Client.LogSee_Key}
-    };
-    request.post(options);
+    if (!data.UniqueKey) {
+        var options = {
+            url: 'http://127.0.0.1:1339/api/authenticate',
+            json: {'AuthKey': config.Client.LogSee_Key}
+        };
+        request.post(options, function(err, response, body) {
+            console.log(body);
+        });
+    }
 };
 
 // Iterates over the configured files and checks for file changes, reports them.
