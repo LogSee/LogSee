@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS `Clients` (
   `InitialAuth` enum('Awaiting Approval','Approved','Denied') NOT NULL DEFAULT 'Awaiting Approval',
   `Live` enum('Y','N') NOT NULL DEFAULT 'N',
   `UniqueKey` varchar(255) NOT NULL,
+  `LastPing` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`ID`),
   UNIQUE KEY `UniqueKey` (`UniqueKey`),
   KEY `UserID_FK` (`UserID`),

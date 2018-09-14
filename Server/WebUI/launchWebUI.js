@@ -102,6 +102,19 @@ app.post('/api/authenticate', function(req, res) {
     };
 });
 
+app.post('/api/pingpong', function(req, res) {
+    res.setHeader('Content-Type', 'application/json'); // Make all our responses json format
+    if (req.body.UniqueKey) {
+        Clients.update(
+            {LastPing: Date.now()}, 
+            {where: {UniqueKey: req.body.UniqueKey}}
+        );
+        res.status(200).send({"Message": "Pong"});
+    } else {
+        res.status(400).send({"Message": "No UniqueKey specified."})
+    };
+});
+
 // Run WebUI
 app.listen(config.WebUI.Port, config.WebUI.IP);
 console.log(`WebUI listening on http://${config.WebUI.IP}:${config.WebUI.Port}.`);
