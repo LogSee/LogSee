@@ -20,15 +20,20 @@ module.exports = function(sequelize, DataTypes) {
 			type: DataTypes.STRING(50),
 			allowNull: true
 		},
-		InitalAuth: {
-			type: DataTypes.ENUM('Failed','Awaiting Approval','Approved','Denied'),
+		InitialAuth: {
+			type: DataTypes.ENUM('Awaiting Approval','Approved','Denied'),
 			allowNull: false,
-			defaultValue: 'Failed'
+			defaultValue: 'Awaiting Approval'
 		},
 		Live: {
 			type: DataTypes.ENUM('Y','N'),
 			allowNull: false,
 			defaultValue: 'N'
+		},
+		UniqueKey: {
+			type: DataTypes.STRING(255),
+			allowNull: false,
+			unique: true
 		}
 	}, {
 		tableName: 'Clients'

@@ -34,12 +34,14 @@ CREATE TABLE IF NOT EXISTS `Clients` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `UserID` int(11) NOT NULL,
   `IP` varchar(50) DEFAULT NULL,
-  `InitalAuth` enum('Failed','Awaiting Approval','Approved','Denied') NOT NULL DEFAULT 'Failed',
+  `InitialAuth` enum('Awaiting Approval','Approved','Denied') NOT NULL DEFAULT 'Awaiting Approval',
   `Live` enum('Y','N') NOT NULL DEFAULT 'N',
+  `UniqueKey` varchar(255) NOT NULL,
   PRIMARY KEY (`ID`),
+  UNIQUE KEY `UniqueKey` (`UniqueKey`),
   KEY `UserID_FK` (`UserID`),
   CONSTRAINT `UserID_FK` FOREIGN KEY (`UserID`) REFERENCES `Users` (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8;
 
 -- Data exporting was unselected.
 -- Dumping structure for table LogSee.InitialAuthKeys
@@ -56,7 +58,7 @@ CREATE TABLE IF NOT EXISTS `InitialAuthKeys` (
   UNIQUE KEY `Key` (`Key`),
   KEY `FK_InitialAuthKeys_Users` (`UserID`),
   CONSTRAINT `FK_InitialAuthKeys_Users` FOREIGN KEY (`UserID`) REFERENCES `Users` (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 -- Data exporting was unselected.
 -- Dumping structure for table LogSee.LogFiles
@@ -90,7 +92,7 @@ CREATE TABLE IF NOT EXISTS `LogSeries` (
 -- Dumping structure for event LogSee.RetentionKeeper
 DROP EVENT IF EXISTS `RetentionKeeper`;
 DELIMITER //
-CREATE DEFINER=`logsee`@`%` EVENT `RetentionKeeper` ON SCHEDULE EVERY 1 HOUR STARTS '2018-09-13 19:38:02' ON COMPLETION NOT PRESERVE ENABLE DO BEGIN
+CREATE DEFINER=`logsee`@`%` EVENT `RetentionKeeper` ON SCHEDULE EVERY 1 HOUR STARTS '2018-09-13 19:49:58' ON COMPLETION NOT PRESERVE ENABLE DO BEGIN
 
 -- Deletes LogSeries records older than the specified RetentionDays duration in LogFiles.
 -- Added as a code comment because the comment was too long to be a comment comment which is an uncommon comment for an error, but because we're commonly commenting comments I've come up with the idea to comment it here instead.
