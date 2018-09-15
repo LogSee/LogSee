@@ -20,8 +20,15 @@ app.get('/configure', function(req, res) {
 app.get('/status', function(req, res) {
     res.sendFile(path.join(__dirname + '/views/status.html')); 
 });
+app.get('/about', function(req, res) {
+    res.sendFile(path.join(__dirname + '/views/about.html')); 
+});
+app.get('/login', function(req, res) {
+    res.sendFile(path.join(__dirname + '/views/login.html')); 
+});
 // Run WebUI
 module.exports = {
     WebUI: app
 }
 console.log(`WebUI listening on http://${config.WebUI.IP}:${config.WebUI.Port}.`);
+console.log(__dirname);
