@@ -1,3 +1,6 @@
+// Note: This file must be launched from runClient.js
+// Note: This file must be launched from runClient.js
+// Note: This file must be launched from runClient.js
 console.log('Initializing WebUI...')
 const express = require('express'); // Npm install express (for serving web stuff)
 var fs = require('fs')
