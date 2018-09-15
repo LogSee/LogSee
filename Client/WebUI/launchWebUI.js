@@ -8,7 +8,7 @@ let app = new express();
 
 // Define Static files
 app.use(express.static(path.join(__dirname + '/static')));
-var config = JSON.parse(fs.readFileSync('./Client/config.json', 'utf8'));
+var config = JSON.parse(fs.readFileSync(__dirname + '/../config.json', 'utf8'));
 
 // Routes
 app.get('/', function(req, res) {
