@@ -8,11 +8,11 @@ var filesArray = [];       // Gets populated by init(); An array of all the file
 var data = {};          // Gets populated by init(); File the client uses to store small bits of data locally.
 
 // Grabs split up metadata such as file name, ext, size, location and returns as dict
-function getFileMetadata(filePath) {
+function getFileMetadata(filepath) {
     return {
-        filename: path.basename(filePath),
-        filePath: filePath,
-        size: fs.statSync(filePath).size
+        filename: path.basename(filepath),
+        filepath: filepath,
+        size: fs.statSync(filepath).size
     };
 };
 
@@ -125,11 +125,10 @@ function ScanFiles() {
     setInterval(function() {
         // Iterate over each file
         for (var f = 0; f < filesArray.length; f++) {
-            tf = filesArray[f]; // This File (tf)
             // If the byte size != the previously logged byte size for that item, read it.
-            if (fs.statSync(tf.Location).size != tf.size) {
-                tf.size = fs.statSync(tf.Location).size; // Update its file size
-                console.log(`New file size detected on file "${tf.filename}"`);
+            if (fs.statSync(filesArray[f].filepath).size != filesArray[f].size) {
+                filesArray[f].size = fs.statSync(filesArray[f].filepath).size; // Update its file size
+                console.log(`New file size detected on file "${filesArray[f].filepath}"`);
                 // Todo: IF Metadata.lastLineSent, send from that line
             };
         };
