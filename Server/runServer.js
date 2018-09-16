@@ -187,7 +187,7 @@ app.post('/api/listclients', function(req, res) {
     })
 });
 
-app.post('/api/lastLine', function(req, res) {
+app.post('/api/getfile', function(req, res) {
     // Gets the last line value from our LogFiles table and returns in
     res.setHeader('Content-Type', 'application/json'); // Make all our responses json format
 
@@ -202,6 +202,22 @@ app.post('/api/lastLine', function(req, res) {
             res.status(200).send({"Message": result});
         });
     });
+});
+
+app.post('/api/addseries', function(req, res) {
+    // Adds a new LogSeries record.
+
+});
+
+app.post('/api/updatefile', function(req, res) {
+    // Updates a DB file record with a new one. Given record must contain all column values.
+    res.setHeader('Content-Type', 'application/json'); // Make all our responses json format
+
+    checkClientPromise(req.body.UniqueKey, res)
+    .then(record => {
+
+    })
+
 });
 
 // Helper functions
