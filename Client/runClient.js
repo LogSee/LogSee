@@ -11,15 +11,17 @@ var data = {};          // Gets populated by init(); File the client uses to sto
 // Grabs split up metadata such as file name, ext, size, location and returns as dict
 function getFileMetadata(filepath) {
     return {
+        ID: null,
         filename: path.basename(filepath),
         filepath: filepath,
-        size: fs.statSync(filepath).size
+        size: fs.statSync(filepath).size,
+        lastLine: 0
     };
 };
 
 // Go round all the files and collect their file names, size, and other things we can add in
 // into a single big array of files that need scanning. Then we can just iterate over that.
-function Init() {
+function Init(callback) {
     console.log('Client Initializing...');
 
     // Go through all the config files, resolve them (or not) and add to the filesArray array.
@@ -51,6 +53,7 @@ function Init() {
         require(__dirname + '/WebUI/launchWebUI.js').WebUI.listen(config.WebUI.Port, config.WebUI.IP);
     };
     console.log('Client Initialized.');
+    callback(true);
 };
 
 // Keeps the data file up to date when changing the data variable
@@ -59,7 +62,7 @@ function UpdateData() {
 };
 
 // Authenticates with server
-function Authenticate() {
+function Authenticate(callback) {
     console.log('Authenticating...');
 
     ////////////////////////////////////////// Developer Note //////////////////////////////////////////////////////
@@ -79,14 +82,9 @@ function Authenticate() {
             console.log('ServerAuth Response:', response.statusCode, body.Message);
             if (response.statusCode == 200) {
                 console.log('Client successfully authenticated.');
+                callback(true);
                 // Hm... We don't actually need to do anything since the client now knows its UniqueKey
                 
-                // Send all these files to the API to ensure they're in the DB
-                // request.post({url: 'http://127.0.0.1:1339/api/addfiles', json: {"Data": filesArray, "UniqueKey": data.UniqueKey}}, function(err, response, body) {
-                //     if (response.statusCode == 200) {
-                //         ScanFiles();
-                //     };
-                // });
             } else if (response.statusCode == 201) { // The server recognised we're a newly connecting client and has given us a unique key
                 data.UniqueKey = body.UniqueKey;
                 UpdateData();
@@ -105,7 +103,7 @@ function Authenticate() {
                 Authenticate();
             };
         } else if (err) {
-            console.log('Could not contact the LogSee server. Re-Attempting...', err.message);
+            console.log('Could not contact the LogSee server:', err.message);
             setTimeout(function() {
                 Authenticate();
             }, 30000) // Check again every 30 seconds
@@ -115,14 +113,30 @@ function Authenticate() {
 
 // Iterates over the configured files and checks for file changes, reports them.
 function ScanFiles() {
+
+    // Send all these files to the API to ensure they're in the DB, ensures the server knows what data we'll be sending it.
+    request.post({url: 'http://127.0.0.1:1339/api/addfiles', json: {"Data": filesArray, "UniqueKey": data.UniqueKey}}, function(err, response, body) {
+        if (response) {
+            console.log(response.statusCode, response.body.Message)
+            if (response.statusCode == 200) {
+                filesArray = response.body.Message;
+            };
+        };
+    });
+
     setInterval(function() {
-        // Iterate over each file
-        for (var f = 0; f < filesArray.length; f++) {
+        for (var f = 0; f < filesArray.length; f++) { // Iterate over each file
             // If the byte size != the previously logged byte size for that item, read it.
             if (fs.statSync(filesArray[f].filepath).size != filesArray[f].size) {
                 filesArray[f].size = fs.statSync(filesArray[f].filepath).size; // Update its file size
                 console.log(`New file size detected on file "${filesArray[f].filepath}"`);
-                // Todo: IF Metadata.lastLineSent, send from that line
+
+                // What was the last line we sent for this file?
+
+                // If last line, send from last line to current, add on line difference
+
+                // If not last line, send everything and count lines sent
+
             };
         };
     }, config.Client.ScanFrequency) // Wait the ScanFrequency value, more of a safety than anything
@@ -132,11 +146,19 @@ function ScanFiles() {
 // Lets the server know every config.Client.PingInterval seconds if it's still alive
 function Pinger() {
     setInterval(function() {
+        console.log('Ping');
         request.post({url: 'http://127.0.0.1:1339/api/pingpong', json: {'UniqueKey': data.UniqueKey} });
     }, config.Client.PingInterval * 1000);
 };
 
-///////////////////////////////////////////////////////
-Init();
-Authenticate();
-Pinger();
+// Javascript is wierd. Todo: Maybe turn into promises. Ugh.
+Init(function(Initialized) {
+    if (Initialized) {
+        Authenticate(function(Authorized) {
+            if (Authorized) {
+                Pinger();
+                ScanFiles();
+            };
+        });
+    };
+});
