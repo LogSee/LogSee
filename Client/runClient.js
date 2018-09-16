@@ -59,8 +59,9 @@ function UpdateData() {
 // Authenticates with server
 function Authenticate() {
     console.log('Authenticating...');
-    if (config.Client.LogSee_Username == "admin" || config.Client.LogSee_Password == "admin") {
-        console.warn('[Critical] - LogSee credentials are still default. Please change them before running the client.');
+    // Check that the client WebUI config isn't using the default values
+    if (config.WebUI.RequireAuth && (config.WebUI.AuthUser == "admin" || config.WebUI.AuthPass == "admin")) {
+        console.warn('[Critical] - The WebUI credentials are still set as default. Please change them before running the client.');
         process.exit();
     };
 
