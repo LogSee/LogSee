@@ -14,7 +14,7 @@ The central log server requires a MySQL backend, it currently works on Mysql 5.7
 
 The central server web interface also features a user management system, granting users certain privliedges such as read only, access to certain group objects, administration etc. 
 
-LogSee willeventually be available in a dockerized form, once we near completion with an initial LogSee release. We may also package it in .deb or .exe form, dependant on how we end up structuring it.
+LogSee will eventually be available in a dockerized form, once we near completion with an initial LogSee release. We may also package it in .deb or .exe form, dependant on how we end up structuring it.
 
 For now, you can follow the guides on the wiki to install LogSee, this is mainly done via running a bash script, but will become more clear over time as the platform is developed.
 
