@@ -214,11 +214,11 @@ const checkClientPromise = function(UniqueKey_Var, res) { // res needed to send 
             }
         })
         .then(record => {
-            if (record) {
+            if (record && record.Live == 'Y') {
                 resolve(record);
             } else {
                 // Automatically sends deny message instead of writing it out in a .catch() on each call
-                res.status(403).send({"Message": "Denied. Incorrect UniqueKey given."}); 
+                res.status(403).send({"Message": "Denied. Incorrect UniqueKey given or this client is no longer marked as live."}); 
             };
         })
         .catch(err => reject(err));
