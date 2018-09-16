@@ -79,7 +79,7 @@ function Authenticate() {
             console.log('ServerAuth Response:', response.statusCode, body.Message);
             if (response.statusCode == 200) {
                 console.log('Client successfully authenticated.');
-                // We don't actually need to do anything since the client now knows its UniqueKey
+                // Hm... We don't actually need to do anything since the client now knows its UniqueKey
                 
                 // Send all these files to the API to ensure they're in the DB
                 // request.post({url: 'http://127.0.0.1:1339/api/addfiles', json: {"Data": filesArray, "UniqueKey": data.UniqueKey}}, function(err, response, body) {
@@ -91,16 +91,18 @@ function Authenticate() {
                 data.UniqueKey = body.UniqueKey;
                 UpdateData();
                 Authenticate();
-            } else if (response.statusCode == 404) { // No unqiue key record was found, wipe our key and try again
-                data.UniqueKey = null;
-                UpdateData();
-                console.log('Server did not recognize us. UniqueKey wiped, attemping re-authentication.');
-                Authenticate();
             } else if (response.statusCode == 401) { // Awaiting approval
                 console.log('Waiting 30s to try again...');
                 setTimeout(function() {
                     Authenticate();
                 }, 30000); // Check again every 30 seconds
+            } else if (response.statusCode == 403) { // Denied. Go away!
+                process.exit();
+            } else if (response.statusCode == 404) { // No unqiue key record was found, wipe our key and try again
+                data.UniqueKey = null;
+                UpdateData();
+                console.log('Server did not recognize us. UniqueKey wiped, attemping re-authentication.');
+                Authenticate();
             };
         } else if (err) {
             console.log('Could not contact the LogSee server. Re-Attempting...', err.message);
@@ -134,6 +136,7 @@ function Pinger() {
     }, config.Client.PingInterval * 1000);
 };
 
-
-Init(); // Run
+///////////////////////////////////////////////////////
+Init();
 Authenticate();
+Pinger();
