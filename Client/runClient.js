@@ -123,31 +123,59 @@ function ScanFiles() {
         };
     });
 
-    setInterval(function() {
-        for (var f = 0; f < filesArray.length; f++) { // Iterate over each file
-            // If the byte size != the previously logged byte size for that item, read it.
-            if (fs.statSync(filesArray[f].filepath).size != filesArray[f].size) {
-                filesArray[f].size = fs.statSync(filesArray[f].filepath).size; // Update its file size
-                console.log(`New file size detected on file "${filesArray[f].filepath}"`);
 
-                // What was the last line we sent for this file?
-                request.post({url: 'http://127.0.0.1:1339/api/lastLine', json: {"Data": filesArray[f], "UniqueKey": data.UniqueKey}}, function(err, response, body) {
-                    if (response) {
-                        console.log(response.statusCode, body.Message)
-                        if (response.statusCode == 200) {
-                            console.log('Line Data for changes file');
-                            console.log(body.Message);
+    // Setup file watchers for each file.
+    for (let f = 0; f < filesArray.length; f++) { // Iterate over each file
 
-                            // If last line, send from last line to current, add on line difference
+        let fsWait = false;
+        fs.watch(filesArray[f].filepath, {encoding: 'utf8'}, function(eventType, filename) {
+            if (filename) {
 
-                            // If not last line, send everything and count lines sent
+                if (fsWait) return; // Limit the method to only return once when detected change (fs.watch() is a lil buggy) by ignoring it for 100ms after first event.
+                fsWait = setTimeout(() => {fsWait = false;}, 100);
 
+                if (eventType == "rename") {
+                    // ohh BALLS! The file has been renamed, way to go silly user!
+
+                    // Identify if the file has been renamed to something else (no longer watchable), or if it's been renamed back (watchable)
+                    if (fs.existsSync(filesArray[f].filepath)) {
+                        console.log(`[Warning] - Regained track of ${filename}`);
+                        // Todo: Set notify message
+                    } else {
+                        console.log(`[Warning] - Lost track of ${filename} due to it being renamed, moved or deleted.`);
+                        // Todo: Set notify message
+                    }
+
+                    // Todo: Notify user via something
+
+                } else if (eventType == "change") {
+                    console.log(filename, 'was modified.');
+
+                    // What was the last line we sent for this file?
+                    request.post({url: 'http://127.0.0.1:1339/api/getfile', json: {"Data": filesArray[f], "UniqueKey": data.UniqueKey}}, function(err, response, body) {
+                        if (response) {
+                            console.log(response.statusCode, body.Message)
+                            if (response.statusCode == 200) {
+                                console.log('Line Data for changes file');
+                                console.log(body.Message);
+
+                                // Read the file and pull the data from said line.
+                                var from_line = 3;
+
+                                // Insert data into LogSeries for this file.
+                                if (fileArray[f].size != body.Message.size) {
+                                    // Todo
+                                }
+                                // Update LogFile record to new size and lastline.
+
+                            };
                         };
-                    };
-                });
+                    });
+                };
             };
-        };
-    }, config.Client.ScanFrequency) // Wait the ScanFrequency value, more of a safety than anything
+        });
+    };
+
     console.log(`Client is running.`);
 };
 
