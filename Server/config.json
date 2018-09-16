@@ -7,7 +7,6 @@
         "SQL_Pass": "admin"
     },
     "WebUI": {
-        "Enabled": true,
         "Port": 1339,
         "IP": "0.0.0.0",
         "RequireAuth": true,
