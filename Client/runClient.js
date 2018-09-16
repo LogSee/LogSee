@@ -114,7 +114,7 @@ function Authenticate(callback) {
 // Iterates over the configured files and checks for file changes, reports them.
 function ScanFiles() {
 
-    // Send all these files to the API to ensure they're in the DB, ensures the server knows what data we'll be sending it.
+    // Send all these files to the API to ensure they're in the DB, and get back data on any metadata of our files.
     request.post({url: 'http://127.0.0.1:1339/api/addfiles', json: {"Data": filesArray, "UniqueKey": data.UniqueKey}}, function(err, response, body) {
         if (response) {
             if (response.statusCode == 200) {
@@ -122,7 +122,6 @@ function ScanFiles() {
             };
         };
     });
-
 
     // Setup file watchers for each file.
     for (let f = 0; f < filesArray.length; f++) { // Iterate over each file
@@ -136,7 +135,6 @@ function ScanFiles() {
 
                 if (eventType == "rename") {
                     // ohh BALLS! The file has been renamed, way to go silly user!
-
                     // Identify if the file has been renamed to something else (no longer watchable), or if it's been renamed back (watchable)
                     if (fs.existsSync(filesArray[f].filepath)) {
                         console.log(`[Warning] - Regained track of ${filename}`);
@@ -151,33 +149,59 @@ function ScanFiles() {
                 } else if (eventType == "change") {
                     console.log(filename, 'was modified.');
 
+                    // Update our memory copy of the file
+                    filesArray[f].size = fs.statSync(filesArray[f].filepath).size,
+
+                    CompareFileToDB(filesArray[f])
+                    .then(changes => {
+                        if (changes) {
+                            console.log('Changes discovered.');
+                        }
+                    })
+
                     // What was the last line we sent for this file?
-                    request.post({url: 'http://127.0.0.1:1339/api/getfile', json: {"Data": filesArray[f], "UniqueKey": data.UniqueKey}}, function(err, response, body) {
-                        if (response) {
-                            console.log(response.statusCode, body.Message)
-                            if (response.statusCode == 200) {
-                                console.log('Line Data for changes file');
-                                console.log(body.Message);
+                    // request.post({url: 'http://127.0.0.1:1339/api/getfile', json: {"Data": filesArray[f], "UniqueKey": data.UniqueKey}}, function(err, response, body) {
+                    //     if (response) {
+                    //         console.log(response.statusCode, body.Message)
+                    //         if (response.statusCode == 200) {
+                    //             console.log('Line Data for changes file');
+                    //             console.log(body.Message);
 
-                                // Read the file and pull the data from said line.
-                                var from_line = 3;
+                    //             // Read the file and pull the data from said line.
+                    //             var from_line = 3;
 
-                                // Insert data into LogSeries for this file.
-                                if (fileArray[f].size != body.Message.size) {
-                                    // Todo
-                                }
-                                // Update LogFile record to new size and lastline.
+                    //             // Insert data into LogSeries for this file.
+                    //             if (filesArray[f].size != body.Message.size) {
+                    //                 // Todo
+                    //             }
+                    //             // Update LogFile record to new size and lastline.
 
-                            };
-                        };
-                    });
+                    //         };
+                    //     };
+                    // });
                 };
             };
         });
     };
-
     console.log(`Client is running.`);
 };
+
+// Compares a file object to the database and returns true if there are differences as a.
+function CompareFileToDB(fileObj) {
+    return new Promise(function(resolve, reject) {
+        request.post({url: 'http://127.0.0.1:1339/api/getfile', json: {"Data": fileObj, "UniqueKey": data.UniqueKey}}, function(err, response, body) {
+            if (response.statusCode == 200) {
+                console.log(fileObj.size, body.Size, fileObj.lastLine, body.LastLine);
+                if (body.Size != fileObj.size || body.LastLine != fileObj.lastLine) {
+                    resolve(true);
+                } else {
+                    reject(false);
+                }
+            }
+        });
+    }).catch(err => err);
+};
+
 
 // Lets the server know every config.Client.PingInterval seconds if it's still alive
 function Pinger() {

@@ -193,13 +193,16 @@ app.post('/api/getfile', function(req, res) {
 
     checkClientPromise(req.body.UniqueKey, res)
     .then(record => {
-        console.log('User authenticated with ID', record.ID);
-        console.log(req.body.Data);
 
         LogFiles.findOne({
-            where: {ID: req.body.Data.ID}
+            where: {ID: req.body.Data.ID},
+            $and: {ClientID: record.ID}
         }).then(result => {
-            res.status(200).send({"Message": result});
+            if (result) {
+                res.status(200).send(result);
+            } else {
+                res.status(404).send();
+            }
         });
     });
 });
