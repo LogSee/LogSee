@@ -1,6 +1,7 @@
 var path = require('path')                      // For managing paths, ofcourse.
 var fs = require('fs')                          // Nodes file system
 var request = require('request')                // npm install request!
+var lineReader = require('readline');           // For reading files from lines
 
 // Variables
 var config = JSON.parse(fs.readFileSync(path.join(__dirname + '/config.json'), 'utf8'));
@@ -50,7 +51,6 @@ function Init() {
         require(__dirname + '/WebUI/launchWebUI.js').WebUI.listen(config.WebUI.Port, config.WebUI.IP);
     };
     console.log('Client Initialized.');
-    Authenticate(); // Login to the server
 };
 
 // Keeps the data file up to date when changing the data variable
@@ -74,59 +74,41 @@ function Authenticate() {
     };
 
     // Ask if our AuthKey matches that of the servers
-    if (config.Client.LogSee_Key && !data.UniqueKey) {
-        console.log('Registering client for first time authentication...');
-        var options = {
-            url: 'http://127.0.0.1:1339/api/authenticate',
-            json: {'AuthKey': config.Client.LogSee_Key}
-        };
-        request.post(options, function(err, response, body) {
-            // If success
+    request.post({url: 'http://127.0.0.1:1339/api/authenticate', json: {'AuthKey': config.Client.LogSee_Key, 'UniqueKey': data.UniqueKey}}, function(err, response, body) {
+        if (response) {
+            console.log('ServerAuth Response:', response.statusCode, body.Message);
             if (response.statusCode == 200) {
-                console.log(response.statusCode, body.Message);
+                console.log('Client successfully authenticated.');
+                // We don't actually need to do anything since the client now knows its UniqueKey
+                
+                // Send all these files to the API to ensure they're in the DB
+                // request.post({url: 'http://127.0.0.1:1339/api/addfiles', json: {"Data": filesArray, "UniqueKey": data.UniqueKey}}, function(err, response, body) {
+                //     if (response.statusCode == 200) {
+                //         ScanFiles();
+                //     };
+                // });
+            } else if (response.statusCode == 201) { // The server recognised we're a newly connecting client and has given us a unique key
                 data.UniqueKey = body.UniqueKey;
                 UpdateData();
                 Authenticate();
-            } else { // If unsuccess (due to errors or failed key)
-                console.log(response.statusCode, body.Message)
-            }
-        });
-    } else if (data.UniqueKey && config.Client.LogSee_Key) { // We have an auth + unique key
-        console.log('Client already registered... Checking status...');
-        var options = {
-            url: 'http://127.0.0.1:1339/api/authenticate',
-            json: {'AuthKey': config.Client.LogSee_Key, 'UniqueKey': data.UniqueKey}
-        };
-        request.post(options, function(err, response, body) {
-            console.log(response.statusCode, body.Message);
-            if (response.statusCode == 200) {
-                console.log('Client successfully authenticated.')
-                Pinger();
-                // Send all these files to the API to ensure they're in the DB
-                request.post({url: 'http://127.0.0.1:1339/api/addfiles', json: {"Data": filesArray, "UniqueKey": data.UniqueKey}}, function(err, response, body) {
-                    if (response.statusCode == 200) {
-                        ScanFiles();
-                    };
-                });
-                
-            } else if (response.statusCode == 404) { // No unqiue key record was found, generate a new one
+            } else if (response.statusCode == 404) { // No unqiue key record was found, wipe our key and try again
                 data.UniqueKey = null;
                 UpdateData();
-                console.log('Server did not recognize us. A new UniqueKey has been generated and attemping re-authentication.')
+                console.log('Server did not recognize us. UniqueKey wiped, attemping re-authentication.');
                 Authenticate();
-            } else if (response.statusCode == 403) { // Denied. Stop asking.
-                process.exit();
             } else if (response.statusCode == 401) { // Awaiting approval
                 console.log('Waiting 30s to try again...');
                 setTimeout(function() {
                     Authenticate();
-                }, 30000) // Check again every 30 seconds
+                }, 30000); // Check again every 30 seconds
             };
-        });
-    } else {
-        console.log('Unable to authenticate with the server as no LogSee_Key has been given.\nPlease create a key via the server dashboard and insert it into the config file.')
-        process.exit();
-    };
+        } else if (err) {
+            console.log('Could not contact the LogSee server. Re-Attempting...', err.message);
+            setTimeout(function() {
+                Authenticate();
+            }, 30000) // Check again every 30 seconds
+        };
+    });
 };
 
 // Iterates over the configured files and checks for file changes, reports them.
@@ -152,4 +134,6 @@ function Pinger() {
     }, config.Client.PingInterval * 1000);
 };
 
+
 Init(); // Run
+Authenticate();
