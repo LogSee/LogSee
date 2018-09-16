@@ -43,6 +43,7 @@ app.get('/', function(req, res) {
 
 // API Routes
 app.post('/api/authenticate', function(req, res) {
+    // Authenticates a client
     res.setHeader('Content-Type', 'application/json'); // Make all our responses json format
 
     // If Authkey but no unique key (first time registering)
@@ -113,40 +114,58 @@ app.post('/api/pingpong', function(req, res) {
 });
 
 app.post('/api/addfiles', function(req, res) {
+    // Adds files from the client as database objects and returns the database object ID that the client will use in future data additions
     res.setHeader('Content-Type', 'application/json'); // Make all our responses json format
-    checkClient(req.body.UniqueKey, function(record) {
-        if (record) {
-            for (let i = 0; i < req.body.Data.length; i++) { // `let` makes the loop run syncronously instead of asynchronously.
-                LogFiles.findOne({
+    checkClient(req.body.UniqueKey, function(record) {  // check with the database that the client is valid (returns true/false callback)
+        if (record) { // If it is a valid client
+
+            const promise = Promise.all(req.body.Data.map(thisData => { // .map passes the data to the promise
+                console.log(thisData);
+                return LogFiles.findOne({
                     where: {
-                        Filename: req.body.Data[i].filename,
-                        $and: {Filepath: req.body.Data[i].filepath},
-                        $and: {ClientID: record.ID}
+                        Filename: thisData.filename,
+                        $and: {
+                            Filepath: thisData.filepath,
+                            ClientID: record.ID,
+                        },
                     }
                 }).then(result => {
                     if (result) {
-                        console.log(`Skipping ${req.body.Data[i].filename} as it's already in database.`);
+                        console.log(`AddFiles: ${thisData.filename} already in database with ID ${result.ID}`);
+                        thisData.ID = result.ID;
+                        thisData.size = result.Size;
+                        return thisData;
                     } else {
-                        console.log(`Adding ${req.body.Data[0].filename} to database...`);
-                        LogFiles.build({
+                        console.log(`AddFiles: Adding ${thisData.filename} to database...`);
+                        return LogFiles.build({
                             ClientID: record.ID,
-                            Filename: req.body.Data[i].filename,
-                            Filepath: req.body.Data[i].filepath,
+                            Filename: thisData.filename,
+                            Filepath: thisData.filepath,
                             RetentionDays: 30,
-                            Size: req.body.Data[i].size
-                        }).save();
+                            Size: thisData.size
+                        }).save().then(thisRecord => {
+                            console.log('AddFiles: Created with ID', thisRecord.ID);
+                            thisData.ID = thisRecord.ID;
+                            return thisData;
+                        })
                     };
                 });
-            };
-            res.status(200).send();
-        } else {
+            }));
+
+            promise.then(result => {
+                res.status(200).send({"Message": result});
+            }).catch(err => {
+                console.log('[Warning]', err);
+            });
+
+        } else { // If it's not a valid client
             res.status(403).send({"Message": "The specified UniqueKey was incorrect or this client is no longer marked as active."});
         };
     });
 });
 
-// Lists all the clients belonging to a user
 app.post('/api/listclients', function(req, res) {
+    // Lists all the clients belonging to a user
     res.setHeader('Content-Type', 'application/json'); // Make all our responses json format
     checkClient(req.body.UniqueKey, function(record) {
         if (record) {
@@ -164,6 +183,10 @@ app.post('/api/listclients', function(req, res) {
         };
     });
 });
+
+app.post('/api/lastLine', function(req, res) {
+    // Gets the last line value from our LogFiles table and returns in
+})
 
 // Helper functions
 function checkClient(TUniqueKey, callback) { // Checks if the client is live and valid via unqiue key, will return client data if so, false if not.
