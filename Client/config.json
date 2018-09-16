@@ -1,7 +1,6 @@
 {
     "Client": {
         "ClientSideFiltering":  false,
-        "ScanFrequency":        10,
         "LogSee_Host":          "51.51.51.51",
 	    "LogSee_Port":          1338,
         "LogSee_Key":           "f876f98ds9f8s6d98df9g869fdhdfh",
