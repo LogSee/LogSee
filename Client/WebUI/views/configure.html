@@ -10,6 +10,7 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
   <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
   <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+  <script> src="/configure_paths_dynamic.js"</script>
 </head>
 
 <body class="bg-secondary">
@@ -155,5 +156,15 @@
                     <label for="LogSee_Key">Authorization Key</label>
             </div>
         </div> 
+        <hr/>
+        <h6>Paths to scan:</h6>
+        <!-- This needs to load from the array of the config.json -->
+        <div class="form-group row">
+            <div class="col-sm-5">
+                <input type="text" class="form-control" id="Paths_Array" placeholder="/var/log/LogSee/client.log">
+            </div>
+            <div class="col col-form-label pl-0">
+                <label for="LogSee_Key">Log File path / directory</label>
+        </div>
     </form>
 </body>
