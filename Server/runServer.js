@@ -116,11 +116,12 @@ app.post('/api/pingpong', function(req, res) {
 app.post('/api/addfiles', function(req, res) {
     // Adds files from the client as database objects and returns the database object ID that the client will use in future data additions
     res.setHeader('Content-Type', 'application/json'); // Make all our responses json format
-    checkClient(req.body.UniqueKey, function(record) {  // check with the database that the client is valid (returns true/false callback)
+
+    checkClientPromise(req.body.UniqueKey, res)
+    .then(record => {
         if (record) { // If it is a valid client
 
             const promise = Promise.all(req.body.Data.map(thisData => { // .map passes the data to the promise
-                console.log(thisData);
                 return LogFiles.findOne({
                     where: {
                         Filename: thisData.filename,
@@ -134,6 +135,7 @@ app.post('/api/addfiles', function(req, res) {
                         console.log(`AddFiles: ${thisData.filename} already in database with ID ${result.ID}`);
                         thisData.ID = result.ID;
                         thisData.size = result.Size;
+                        thisData.lastLine = result.LastLine;
                         return thisData;
                     } else {
                         console.log(`AddFiles: Adding ${thisData.filename} to database...`);
@@ -152,56 +154,76 @@ app.post('/api/addfiles', function(req, res) {
                 });
             }));
 
-            promise.then(result => {
+            promise
+            .then(result => {
                 res.status(200).send({"Message": result});
-            }).catch(err => {
+            })
+            .catch(err => {
                 console.log('[Warning]', err);
             });
 
         } else { // If it's not a valid client
             res.status(403).send({"Message": "The specified UniqueKey was incorrect or this client is no longer marked as active."});
         };
-    });
+    })
 });
 
 app.post('/api/listclients', function(req, res) {
     // Lists all the clients belonging to a user
     res.setHeader('Content-Type', 'application/json'); // Make all our responses json format
-    checkClient(req.body.UniqueKey, function(record) {
-        if (record) {
-            Clients.findAll({
-                where: {
-                    UserID: record.UserID
-                }
-            }).then(result => {
-                if (result) {
-                    res.status(200).send({"UserID": record.UserID, "Message": result})
-                };
-            });
-        } else {
-            res.status(403).send({"Message": "The specified UniqueKey was incorrect or this client is no longer marked as active."});
-        };
-    });
+
+    checkClientPromise(req.body.UniqueKey)
+    .then(record => {
+        Clients.findAll({
+            where: {
+                UserID: record.UserID
+            }
+        })
+        .then(result => {
+            if (result) {
+                res.status(200).send({"UserID": record.UserID, "Message": result})
+            };
+        });
+    })
 });
 
 app.post('/api/lastLine', function(req, res) {
     // Gets the last line value from our LogFiles table and returns in
-})
+    res.setHeader('Content-Type', 'application/json'); // Make all our responses json format
+
+    checkClientPromise(req.body.UniqueKey, res)
+    .then(record => {
+        console.log('User authenticated with ID', record.ID);
+        console.log(req.body.Data);
+
+        LogFiles.findOne({
+            where: {ID: req.body.Data.ID}
+        }).then(result => {
+            res.status(200).send({"Message": result});
+        });
+    });
+});
 
 // Helper functions
-function checkClient(TUniqueKey, callback) { // Checks if the client is live and valid via unqiue key, will return client data if so, false if not.
-    Clients.findOne({
-        where: {
-            UniqueKey: TUniqueKey,
-            $and: {Live: 'Y'}
-        }
-    }).then(record => {
-        if (record) {
-            return callback(record);
-        } else {
-            return callback(false);
-        };
-    });
+const checkClientPromise = function(UniqueKey_Var, res) { // res needed to send automatic denial responses.
+    return new Promise(function(resolve, reject) {
+        Clients.findOne({
+            where: {
+                UniqueKey: UniqueKey_Var,
+                $and: {Live: 'Y'}
+            }
+        })
+        .then(record => {
+            if (record) {
+                resolve(record);
+            } else {
+                // Automatically sends deny message instead of writing it out in a .catch() on each call
+                res.status(403).send({"Message": "Denied. Incorrect UniqueKey given."}); 
+            };
+        })
+        .catch(err => reject(err));
+    })
+    .catch(err => reject(err));
 };
 
 
