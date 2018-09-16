@@ -28,6 +28,11 @@ module.exports = function(sequelize, DataTypes) {
 			type: DataTypes.INTEGER(11),
 			allowNull: false
 		},
+		LastLine: {
+			type: DataTypes.INTEGER(11),
+			allowNull: true,
+			defaultValue: '0'
+		},
 		Size: {
 			type: DataTypes.INTEGER(11),
 			allowNull: false,
