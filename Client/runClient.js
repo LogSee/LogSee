@@ -117,9 +117,8 @@ function ScanFiles() {
     // Send all these files to the API to ensure they're in the DB, ensures the server knows what data we'll be sending it.
     request.post({url: 'http://127.0.0.1:1339/api/addfiles', json: {"Data": filesArray, "UniqueKey": data.UniqueKey}}, function(err, response, body) {
         if (response) {
-            console.log(response.statusCode, response.body.Message)
             if (response.statusCode == 200) {
-                filesArray = response.body.Message;
+                filesArray = body.Message;
             };
         };
     });
@@ -132,11 +131,20 @@ function ScanFiles() {
                 console.log(`New file size detected on file "${filesArray[f].filepath}"`);
 
                 // What was the last line we sent for this file?
+                request.post({url: 'http://127.0.0.1:1339/api/lastLine', json: {"Data": filesArray[f], "UniqueKey": data.UniqueKey}}, function(err, response, body) {
+                    if (response) {
+                        console.log(response.statusCode, body.Message)
+                        if (response.statusCode == 200) {
+                            console.log('Line Data for changes file');
+                            console.log(body.Message);
 
-                // If last line, send from last line to current, add on line difference
+                            // If last line, send from last line to current, add on line difference
 
-                // If not last line, send everything and count lines sent
+                            // If not last line, send everything and count lines sent
 
+                        };
+                    };
+                });
             };
         };
     }, config.Client.ScanFrequency) // Wait the ScanFrequency value, more of a safety than anything
