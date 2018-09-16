@@ -45,11 +45,8 @@ app.get('/', function(req, res) {
 app.post('/api/authenticate', function(req, res) {
     res.setHeader('Content-Type', 'application/json'); // Make all our responses json format
 
-    if (!req.body.AuthKey) {
-        res.status(400).send({"Message": "You are missing 'AuthKey' or 'UniqueKey' parameters."})
-    };
-
-    if (req.body.AuthKey) {
+    // If Authkey but no unique key (first time registering)
+    if (req.body.AuthKey && !req.body.UniqueKey) {
         // Check with the database
         InitialAuthKeys.findOne({
             where: {
@@ -58,45 +55,44 @@ app.post('/api/authenticate', function(req, res) {
         }).then(InitialAuthKeys => {
             if (InitialAuthKeys) {
                 console.log('Client authentication key is valid');
-                // The Authkey is valid. Have they specified a unique key?
-                if (req.body.UniqueKey) {
-                    console.log('Client has specified a UniqueKey. Checking validation...')
-                    Clients.findOne({
-                        where: {
-                            UniqueKey: req.body.UniqueKey
-                        }
-                    }).then(Clients => {
-                        if (Clients) {
-                            if (Clients.InitialAuth == 'Approved') {
-                                res.status(200).send({"Message": "Authentication Approved."})
-                            } else if (Clients.InitialAuth == 'Denied') {
-                                res.status(403).send({"Message": "You have been denied authentication approval."})
-                            } else {
-                                res.status(401).send({"Message": "You are still awaiting authentication approval which can be done via the server dashboard."})
-                            };
-                        } else {
-                            res.status(404).send({"Message": "No record for this unique key was found."})
-                        };
-                    });
+                // Add it as a new Client
+                var uk = crypto.randomBytes(48).toString('base64');
+                const ClientRecord = Clients.build({
+                    UserID: InitialAuthKeys.UserID,
+                    IP: req.connection.remoteAddress,
+                    InitialAuth: 'Awaiting Approval',
+                    Live: 'N',
+                    UniqueKey: uk
+                });
+                ClientRecord.save().then(ClientRecord => {
+                    res.status(201).send({"Message": "New client has been registered. Awaiting user approval via server interface.", "UniqueKey": uk});
+                }).catch(error =>{
+                    res.status(500).send({"Message": "Issue contacting database. Please try again later."});
+                    console.warn('[Warning] - Client Record failed to commit!', error);
+                });
+            } else {
+                res.status(403).send({"Message": "Denied. Incorrect Authentication Key."});
+            };
+        });
+    };
+
+    // If they've specified a unqiue key, use that instead (incase the authkey has expired since then)
+    if (req.body.UniqueKey) {
+        Clients.findOne({
+            where: {
+                UniqueKey: req.body.UniqueKey
+            }
+        }).then(Clients => {
+            if (Clients) {
+                if (Clients.InitialAuth == 'Approved') {
+                    res.status(200).send({"Message": "Authentication Approved."})
+                } else if (Clients.InitialAuth == 'Denied') {
+                    res.status(403).send({"Message": "You have been denied authentication approval."})
                 } else {
-                    // Add it as a new Client
-                    var uk = crypto.randomBytes(48).toString('base64');
-                    const ClientRecord = Clients.build({
-                        UserID: InitialAuthKeys.UserID,
-                        IP: req.connection.remoteAddress,
-                        InitialAuth: 'Awaiting Approval',
-                        Live: 'N',
-                        UniqueKey: uk
-                    });
-                    ClientRecord.save().then(ClientRecord => {
-                        res.status(200).send({"Message": "New client has been registered. Awaiting user approval via server interface.", "UniqueKey": uk});
-                    }).catch(error =>{
-                        res.status(500).send({"Message": "Issue contacting database. Please try again later."});
-                        console.warn('[Warning] - Client Record failed to commit!', error);
-                    });
+                    res.status(401).send({"Message": "You are still awaiting authentication approval which can be done via the server dashboard."})
                 };
             } else {
-                res.status(403).send({"Message": "Incorrect Authentication Key."});
+                res.status(404).send({"Message": "No record for this unique key was found."})
             };
         });
     };
