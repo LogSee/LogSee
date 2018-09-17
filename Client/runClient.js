@@ -203,14 +203,14 @@ function CompareFileToDB(fileObj) {
     }).catch(err => err);
 };
 
-// Opens and parses a file and returns the data from a specified line to the end. 
-function readFromLine(fileObj, lineNumber = 0, encoding = 'utf8') {
+// Opens and parses a file and returns the data from a specified line to the end.
+function readFromLine(fileObj, endNumber = 0, startNumber = 0, encoding = 'utf8') {
     // Read the file, LF (Line Feed) = \n, CR (Crridge Return) = \r
     fOpen = fs.readFileSync(fileObj.filepath, {encoding: encoding});
     fOpen = fOpen.replace(/\r\n|\n\n|\r/g, '\n').split('\n');           // Replace all kinds of breaks with a single new line break.
     //fOpen = fOpen.split(/\r\n|\n|\r]/);                               // Or actually read all the line breaks
 
-    fOpen.splice(0, lineNumber); // Delete from 0 to lineNumber so the number after LineNumber becomes the new starting position.
+    fOpen.splice(startNumber, endNumber); // Delete from 0 to lineNumber so the number after LineNumber becomes the new starting position.
     return fOpen;
 };
 
