@@ -20,7 +20,7 @@ function getFileMetadata(filepath) {
 };
 
 // Go round all the files and collect their file names, size, and other things we can add in
-// into a single big array of files that need scanning. Then we can just iterate over that.
+// into a single big array of files that need scanning. Then we can just iterate over that./
 function Init(callback) {
     console.log('Client Initializing...');
 
