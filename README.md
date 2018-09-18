@@ -26,4 +26,4 @@ For now we are focusing on getting the platform up and running and stable with o
 
 ## Get in touch
 
-Join #logsee on irc.freenode.net for support / to get in touch with the devs (Ainsey11 / Popzi)
+Join #logsee on irc.freenode.net for support / to get in touch with the devs (Ainsey / Popzi)
