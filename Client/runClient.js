@@ -1,6 +1,6 @@
-var path = require('path')                      // For managing paths, ofcourse.
-var fs = require('fs')                          // Nodes file system
-var request = require('request')                // npm install request!
+var path = require('path');                      // For managing paths, ofcourse.
+var fs = require('fs');                          // Nodes file system
+var request = require('request');                // npm install request!
 var lineReader = require('readline');           // For reading files from lines
 
 // Variables
