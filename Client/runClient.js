@@ -159,7 +159,6 @@ function ScanFiles() {
 
                             console.log(readFromLine(filesArray[f], 5100));
 
-
                         };
                     });
 
@@ -214,7 +213,7 @@ function readFromLine(fileObj, endNumber = 0, startNumber = 0, encoding = 'utf8'
     return fOpen;
 };
 
-// Lets the server know every config.Client.PingInterval seconds if it's still alive
+// Lets the server know we're still alive every config.Client.PingInterval seconds if
 function Pinger() {
     setInterval(function() {
         console.log('Ping');
