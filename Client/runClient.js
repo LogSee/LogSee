@@ -1,6 +1,6 @@
-var path = require('path')                      // For managing paths, ofcourse.
-var fs = require('fs')                          // Nodes file system
-var request = require('request')                // npm install request!
+var path = require('path');                      // For managing paths, ofcourse.
+var fs = require('fs');                          // Nodes file system
+var request = require('request');                // npm install request!
 var lineReader = require('readline');           // For reading files from lines
 
 // Variables
@@ -142,7 +142,7 @@ function ScanFiles() {
                     } else {
                         console.log(`[Warning] - Lost track of ${filename} due to it being renamed, moved or deleted.`);
                         // Todo: Set notify message
-                    }
+                    };
 
                     // Todo: Notify user via something
 
@@ -156,8 +156,11 @@ function ScanFiles() {
                     .then(changes => {
                         if (changes) {
                             console.log('Changes discovered.');
-                        }
-                    })
+
+                            console.log(readFromLine(filesArray[f], 5100));
+
+                        };
+                    });
 
                     // What was the last line we sent for this file?
                     // request.post({url: 'http://127.0.0.1:1339/api/getfile', json: {"Data": filesArray[f], "UniqueKey": data.UniqueKey}}, function(err, response, body) {
@@ -166,16 +169,13 @@ function ScanFiles() {
                     //         if (response.statusCode == 200) {
                     //             console.log('Line Data for changes file');
                     //             console.log(body.Message);
-
                     //             // Read the file and pull the data from said line.
                     //             var from_line = 3;
-
                     //             // Insert data into LogSeries for this file.
                     //             if (filesArray[f].size != body.Message.size) {
                     //                 // Todo
                     //             }
                     //             // Update LogFile record to new size and lastline.
-
                     //         };
                     //     };
                     // });
@@ -202,8 +202,18 @@ function CompareFileToDB(fileObj) {
     }).catch(err => err);
 };
 
+// Opens and parses a file and returns the data from a specified line to the end.
+function readFromLine(fileObj, endNumber = 0, startNumber = 0, encoding = 'utf8') {
+    // Read the file, LF (Line Feed) = \n, CR (Crridge Return) = \r
+    fOpen = fs.readFileSync(fileObj.filepath, {encoding: encoding});
+    fOpen = fOpen.replace(/\r\n|\n\n|\r/g, '\n').split('\n');           // Replace all kinds of breaks with a single new line break.
+    //fOpen = fOpen.split(/\r\n|\n|\r]/);                               // Or actually read all the line breaks
 
-// Lets the server know every config.Client.PingInterval seconds if it's still alive
+    fOpen.splice(startNumber, endNumber); // Delete from 0 to lineNumber so the number after LineNumber becomes the new starting position.
+    return fOpen;
+};
+
+// Lets the server know we're still alive every config.Client.PingInterval seconds if
 function Pinger() {
     setInterval(function() {
         console.log('Ping');

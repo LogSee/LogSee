@@ -6,7 +6,7 @@ The following is a set of guidelines that github give us free internet points fo
 
 ## What do I need to know before I get started?
 
-Check out the Wiki page called "[Developer Quickstart](https://github.com/LogSee/LogSee/wiki/Developer-Quickstart)", this contains a list of packages you'll need on your system to be able to test the code.
+Check out the [Developer Quickstart](https://github.com/LogSee/LogSee/wiki/Developer-Quickstart), this contains a list of packages you'll need on your system to be able to test the code.
 LogSee is built in a semi modular fasion, check out the Notifications folder on the Server section to get a good idea of how we've done things.
 
 We dev using the VsCode editor, with GitLens and Code Runner installed, but this is up to you, we just like that ide. I guess we're a bit weird...
