@@ -2,6 +2,7 @@ var path = require('path');                      // For managing paths, ofcourse
 var fs = require('fs');                          // Nodes file system
 var request = require('request');                // npm install request!
 var lineReader = require('readline');           // For reading files from lines
+var zlib = require('zlib');
 
 // Variables
 var config = JSON.parse(fs.readFileSync(path.join(__dirname + '/config.json'), 'utf8'));
@@ -191,7 +192,7 @@ function CompareFileToDB(fileObj) {
     return new Promise(function(resolve, reject) {
         request.post({url: 'http://127.0.0.1:1339/api/getfile', json: {"Data": fileObj, "UniqueKey": data.UniqueKey}}, function(err, response, body) {
             if (response.statusCode == 200) {
-                console.log(fileObj.size, body.Size, fileObj.lastLine, body.LastLine);
+                //console.log('CompareToFile:', fileObj.size, body.Size, fileObj.lastLine, body.LastLine);
                 if (body.Size != fileObj.size || body.LastLine != fileObj.lastLine) {
                     resolve(true);
                 } else {
@@ -202,7 +203,7 @@ function CompareFileToDB(fileObj) {
                 // Todo: Make the request to the API point for handling errors
                 let errData = {
                     "Severity": 'ANOMOLY',
-                    "Message": "Failed to get a reponse(200) from central LogSee server when comparing a local file to the datbase when it was changed.",
+                    "Message": `Failed to get a reponse(200) from central LogSee server when comparing a local file to the datbase when it was changed. Got response ${response.statusCode} instead.`,
                     "Traceback": null
                 }
                 request.post({url: 'http://127.0.0.1:1339/api/errorhandle', json: {"Data": errData, "UniqueKey": data.UniqueKey}}, function(err, response, body) {
@@ -221,8 +222,20 @@ function readFromLine(fileObj, endNumber = 0, startNumber = 0, encoding = 'utf8'
     fOpen = fs.readFileSync(fileObj.filepath, {encoding: encoding});
     fOpen = fOpen.replace(/\r\n|\n\n|\r/g, '\n').split('\n');           // Replace all kinds of breaks with a single new line break.
     //fOpen = fOpen.split(/\r\n|\n|\r]/);                               // Or actually read all the line breaks
+    
+    console.log(`LastLine of file ${fileObj.filename} was changed from ${fileObj.lastLine} to ${fOpen.length}`);
+    fileObj.lastLine = fOpen.length;
 
-    fOpen.splice(startNumber, endNumber); // Delete from 0 to lineNumber so the number after LineNumber becomes the new starting position.
+    // Does this log file leave an empty trailing line like it's supposed to?
+    if (fOpen[fOpen.length - 1]) {
+        var offset = 0; // Not trailing
+    } else {
+        var offset = 1; // Trailing
+    }
+
+    fOpen.splice(startNumber, endNumber - offset); // Delete from 0 to lineNumber so the number after LineNumber becomes the new starting position.
+    if (offset == 1) fOpen.pop(); // Dont commit the empty last trailing line...
+
     return fOpen;
 };
 
