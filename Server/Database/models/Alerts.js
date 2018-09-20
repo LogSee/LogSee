@@ -27,6 +27,11 @@ module.exports = function(sequelize, DataTypes) {
 		Traceback: {
 			type: DataTypes.TEXT,
 			allowNull: true
+		},
+		DateAdded: {
+			type: DataTypes.DATE,
+			allowNull: true,
+			defaultValue: sequelize.literal('CURRENT_TIMESTAMP')
 		}
 	}, {
 		tableName: 'Alerts'

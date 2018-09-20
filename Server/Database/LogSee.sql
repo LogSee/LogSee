@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS `Alerts` (
   `Severity` enum('WARNING','ANOMOLY','CRITICAL') DEFAULT NULL,
   `Message` longtext,
   `Traceback` longtext COMMENT 'Doesn''t need to be provided until we add functionality of catching global exceptions',
+  `DateAdded` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`ID`),
   KEY `FK_Alerts_Clients` (`ClientID`),
   CONSTRAINT `FK_Alerts_Clients` FOREIGN KEY (`ClientID`) REFERENCES `Clients` (`ID`)
