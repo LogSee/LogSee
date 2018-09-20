@@ -13,19 +13,15 @@ USE `LogSee`;
 -- Dumping structure for table LogSee.Alerts
 DROP TABLE IF EXISTS `Alerts`;
 CREATE TABLE IF NOT EXISTS `Alerts` (
-  `AlertID` int(11) NOT NULL AUTO_INCREMENT,
-  `ClientID` int(11) NOT NULL,
-  `TimeStamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `Severity` varchar(20) NOT NULL,
-  `LogMessage` int(11) DEFAULT NULL COMMENT 'What is this?',
-  `NotificationIssued` enum('Y','N') NOT NULL,
-  `NotificationMethod` varchar(50) NOT NULL,
-  PRIMARY KEY (`AlertID`),
-  KEY `FK_Alerts_Users` (`ClientID`),
-  KEY `FK_Alerts_LogSeries` (`LogMessage`),
-  CONSTRAINT `FK_Alerts_LogSeries` FOREIGN KEY (`LogMessage`) REFERENCES `LogSeries` (`LogFileID`),
-  CONSTRAINT `FK_Alerts_Users` FOREIGN KEY (`ClientID`) REFERENCES `Users` (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `ClientID` int(11) DEFAULT NULL,
+  `Severity` enum('WARNING','ANOMOLY','CRITICAL') DEFAULT NULL,
+  `Message` longtext,
+  `Traceback` longtext COMMENT 'Doesn''t need to be provided until we add functionality of catching global exceptions',
+  PRIMARY KEY (`ID`),
+  KEY `FK_Alerts_Clients` (`ClientID`),
+  CONSTRAINT `FK_Alerts_Clients` FOREIGN KEY (`ClientID`) REFERENCES `Clients` (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='A table for certain client events, such as exceptions being thrown (and handled) aswell as minor things such as missing files etc.';
 
 -- Data exporting was unselected.
 -- Dumping structure for table LogSee.Clients
@@ -42,7 +38,7 @@ CREATE TABLE IF NOT EXISTS `Clients` (
   UNIQUE KEY `UniqueKey` (`UniqueKey`),
   KEY `UserID_FK` (`UserID`),
   CONSTRAINT `UserID_FK` FOREIGN KEY (`UserID`) REFERENCES `Users` (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8;
 
 -- Data exporting was unselected.
 -- Dumping structure for table LogSee.InitialAuthKeys
@@ -70,11 +66,13 @@ CREATE TABLE IF NOT EXISTS `LogFiles` (
   `Filename` varchar(255) NOT NULL,
   `Filepath` varchar(255) NOT NULL,
   `RetentionDays` int(11) NOT NULL,
+  `LastLine` int(11) DEFAULT '0',
+  `Size` int(11) NOT NULL DEFAULT '0',
   `DateAdded` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`ID`),
   KEY `ClientID_FK` (`ClientID`),
   CONSTRAINT `ClientID_FK` FOREIGN KEY (`ClientID`) REFERENCES `Clients` (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='Stores all the files coming from each Client and how long they should be retained for';
+) ENGINE=InnoDB AUTO_INCREMENT=105 DEFAULT CHARSET=utf8 COMMENT='Stores all the files coming from each Client and how long they should be retained for';
 
 -- Data exporting was unselected.
 -- Dumping structure for table LogSee.LogSeries
@@ -88,6 +86,24 @@ CREATE TABLE IF NOT EXISTS `LogSeries` (
   KEY `LogFileID_FK` (`LogFileID`),
   CONSTRAINT `LogFileID_FK` FOREIGN KEY (`LogFileID`) REFERENCES `LogFiles` (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COMMENT='Stores data for each LogFile';
+
+-- Data exporting was unselected.
+-- Dumping structure for table LogSee.NotificationsQueue
+DROP TABLE IF EXISTS `NotificationsQueue`;
+CREATE TABLE IF NOT EXISTS `NotificationsQueue` (
+  `AlertID` int(11) NOT NULL AUTO_INCREMENT,
+  `ClientID` int(11) NOT NULL,
+  `TimeStamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `Severity` varchar(20) NOT NULL,
+  `LogMessage` int(11) DEFAULT NULL COMMENT 'What is this?',
+  `NotificationIssued` enum('Y','N') NOT NULL,
+  `NotificationMethod` varchar(50) NOT NULL,
+  PRIMARY KEY (`AlertID`),
+  KEY `FK_Alerts_Users` (`ClientID`),
+  KEY `FK_Alerts_LogSeries` (`LogMessage`),
+  CONSTRAINT `FK_Alerts_LogSeries` FOREIGN KEY (`LogMessage`) REFERENCES `LogSeries` (`LogFileID`),
+  CONSTRAINT `FK_Alerts_Users` FOREIGN KEY (`ClientID`) REFERENCES `Users` (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Data exporting was unselected.
 -- Dumping structure for event LogSee.RetentionKeeper

@@ -2,7 +2,7 @@
 
 module.exports = function(sequelize, DataTypes) {
 	return sequelize.define('Alerts', {
-		AlertID: {
+		ID: {
 			type: DataTypes.INTEGER(11),
 			allowNull: false,
 			primaryKey: true,
@@ -10,36 +10,23 @@ module.exports = function(sequelize, DataTypes) {
 		},
 		ClientID: {
 			type: DataTypes.INTEGER(11),
-			allowNull: false,
+			allowNull: true,
 			references: {
-				model: 'Users',
+				model: 'Clients',
 				key: 'ID'
 			}
 		},
-		TimeStamp: {
-			type: DataTypes.DATE,
-			allowNull: false,
-			defaultValue: sequelize.literal('CURRENT_TIMESTAMP')
-		},
 		Severity: {
-			type: DataTypes.STRING(20),
-			allowNull: false
+			type: DataTypes.ENUM('WARNING','ANOMOLY','CRITICAL'),
+			allowNull: true
 		},
-		LogMessage: {
-			type: DataTypes.INTEGER(11),
-			allowNull: true,
-			references: {
-				model: 'LogSeries',
-				key: 'LogFileID'
-			}
+		Message: {
+			type: DataTypes.TEXT,
+			allowNull: true
 		},
-		NotificationIssued: {
-			type: DataTypes.ENUM('Y','N'),
-			allowNull: false
-		},
-		NotificationMethod: {
-			type: DataTypes.STRING(50),
-			allowNull: false
+		Traceback: {
+			type: DataTypes.TEXT,
+			allowNull: true
 		}
 	}, {
 		tableName: 'Alerts'
