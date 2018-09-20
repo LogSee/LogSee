@@ -158,8 +158,12 @@ function ScanFiles() {
                         if (changes) {
                             console.log('Changes discovered.');
 
-                            console.log(readFromLine(filesArray[f], 5100));
+                            let dataToSend = JSON.stringify(readFromLine(filesArray[f], filesArray[f].lastLine));
 
+                            //Compress that data
+                            console.log(dataToSend);
+                            console.log('Compressed Data:');
+                            console.log(zlib.deflateSync(dataToSend).toString('base64'));
                         };
                     });
 
