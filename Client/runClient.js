@@ -197,6 +197,19 @@ function CompareFileToDB(fileObj) {
                 } else {
                     reject(false);
                 }
+            } else {
+                console.log('[WARNING] - Got unexpected response code from server:', response.statusCode);
+                // Todo: Make the request to the API point for handling errors
+                let errData = {
+                    "Severity": 'ANOMOLY',
+                    "Message": "Failed to get a reponse(200) from central LogSee server when comparing a local file to the datbase when it was changed.",
+                    "Traceback": null
+                }
+                request.post({url: 'http://127.0.0.1:1339/api/errorhandle', json: {"Data": errData, "UniqueKey": data.UniqueKey}}, function(err, response, body) {
+                    if (err || !response) {
+                        throw `Issue sending alert to database, is the central LogSee server running? - ${errData.Message}`
+                    }
+                });
             }
         });
     }).catch(err => err);
