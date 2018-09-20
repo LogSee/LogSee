@@ -35,6 +35,7 @@ const InitialAuthKeys = sequelize.import(path.join(__dirname + '/Database/models
 const LogFiles = sequelize.import(path.join(__dirname + '/Database/models/LogFiles.js'))
 const LogSeries = sequelize.import(path.join(__dirname + '/Database/models/LogSeries.js'))
 const ServerStatus = sequelize.import(path.join(__dirname + '/Database/models/ServerStatus.js'))
+const NotificationsQueue = sequelize.import(path.join(__dirname + '/Database/models/NotificationsQueue.js'))
 
 // URL Routes
 app.get('/', function(req, res) {
@@ -221,6 +222,25 @@ app.post('/api/updatefile', function(req, res) {
 
     })
 
+});
+
+app.post('/api/errorhandle', function(req, res) {
+    // Recieves errors from the client that the client and puts them into the Alert table so that the user can read them at their own leisure.
+    res.setHeader('Content-Type', 'application/json'); // Make all our responses json format
+
+    checkClientPromise(req.body.UniqueKey, res)
+    .then(record => {
+        // Add the issue to the DB
+        Alerts.build({
+            ClientID: record.ID,
+            Severity: req.body.Data.Severity,
+            Message: req.body.Data.Message,
+            Traceback: req.body.Data.Traceback
+        }).save().then(thisRecord => {
+            console.log('ErrorHandle: Alert created with ID', thisRecord.ID);
+        });
+        // Todo: Notify user
+    })
 });
 
 // Helper functions
