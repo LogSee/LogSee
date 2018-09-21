@@ -87,38 +87,39 @@ function Authenticate(callback) {
     };
 
     // Ask if our AuthKey matches that of the servers
-    request.post({url: `${config.LSSURI}/api/authenticate`, json: {'AuthKey': config.Client.LogSee_Key, 'UniqueKey': data.UniqueKey}}, function(err, response, body) {
-        if (response) {
-            console.log('ServerAuth Response:', response.statusCode, body.Message);
-            if (response.statusCode == 200) {
-                console.log('Client successfully authenticated.');
-                callback(true);
-                // Hm... We don't actually need to do anything since the client now knows its UniqueKey
-                
-            } else if (response.statusCode == 201) { // The server recognised we're a newly connecting client and has given us a unique key
-                data.UniqueKey = body.UniqueKey;
-                UpdateData();
-                Authenticate();
-            } else if (response.statusCode == 401) { // Awaiting approval
-                console.log('Waiting 30s to try again...');
+    function makeAuthReq() {
+        request.post({url: `${config.LSSURI}/api/authenticate`, json: {'AuthKey': config.Client.LogSee_Key, 'UniqueKey': data.UniqueKey}}, function(err, response, body) {
+            if (response) {
+                console.log('ServerAuth Response:', response.statusCode, body.Message);
+                if (response.statusCode == 200) {
+                    console.log('Client successfully authenticated.');
+                    callback(true); // Continues to next step
+                } else if (response.statusCode == 201) { // The server recognised we're a newly connecting client and has given us a unique key
+                    data.UniqueKey = body.UniqueKey;
+                    UpdateData();
+                    makeAuthReq();
+                } else if (response.statusCode == 401) { // Awaiting approval
+                    console.log('Waiting 30s to try again...');
+                    setTimeout(function() {
+                        makeAuthReq();
+                    }, 30000); // Check again every 30s
+                } else if (response.statusCode == 403) { // Denied. Go away!
+                    process.exit();
+                } else if (response.statusCode == 404) { // No unqiue key record was found, wipe our key and try again
+                    data.UniqueKey = null;
+                    UpdateData();
+                    console.log('Server did not recognize us. UniqueKey wiped, attemping re-authentication.');
+                    makeAuthReq();
+                };
+            } else if (err) {
+                console.log('Could not contact the LogSee server:', err.message);
                 setTimeout(function() {
-                    Authenticate();
-                }, 30000); // Check again every 30 seconds
-            } else if (response.statusCode == 403) { // Denied. Go away!
-                process.exit();
-            } else if (response.statusCode == 404) { // No unqiue key record was found, wipe our key and try again
-                data.UniqueKey = null;
-                UpdateData();
-                console.log('Server did not recognize us. UniqueKey wiped, attemping re-authentication.');
-                Authenticate();
+                    makeAuthReq();
+                }, 30000) // Check again every 30s
             };
-        } else if (err) {
-            console.log('Could not contact the LogSee server:', err.message);
-            setTimeout(function() {
-                Authenticate();
-            }, 30000) // Check again every 30 seconds
-        };
-    });
+        });
+    };
+    makeAuthReq();
 };
 
 // Iterates over the configured files and checks for file changes, reports them.
