@@ -1,4 +1,8 @@
-console.log('Initializing WebUI...');
+if (process.version[1] != "8") { // Version check
+    console.log('[WARNING] - Not running Node v8!')
+    process.exit();
+};
+
 var bodyParser = require('body-parser');    // npm install trash   ...oh wait no...    body-parser
 var Sequelize = require('sequelize');       // npm install sequelize, mysql2    (database ORM)
 var express = require('express');           // npm install express      (for serving web stuff)
@@ -9,6 +13,7 @@ var fs = require('fs');
 //var tedious = require('tedious')          // npm install tedious      (for talking to Microsoft SQL)
 
 // Create express app
+console.log('Initializing WebUI...');
 let app = new express();
 var config = JSON.parse(fs.readFileSync(path.join(__dirname + '/config.json'), 'utf8'));
 
@@ -37,7 +42,7 @@ const LogSeries = sequelize.import(path.join(__dirname + '/Database/models/LogSe
 const ServerStatus = sequelize.import(path.join(__dirname + '/Database/models/ServerStatus.js'))
 const NotificationsQueue = sequelize.import(path.join(__dirname + '/Database/models/NotificationsQueue.js'))
 
-// URL Routes
+// URL / WebUI Routes
 app.get('/', function(req, res) {
     res.sendFile(path.join(__dirname + '/WebUI/templates/index.html'));
 });
@@ -264,7 +269,6 @@ const checkClientPromise = function(UniqueKey_Var, res) { // res needed to send 
     })
     .catch(err => reject(err));
 };
-
 
 // Run WebUI
 app.listen(config.WebUI.Port, config.WebUI.IP);
