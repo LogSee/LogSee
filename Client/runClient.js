@@ -57,6 +57,11 @@ function Init(callback) {
     if (config.WebUI.Enabled) {
         require(__dirname + '/WebUI/launchWebUI.js').WebUI.listen(config.WebUI.Port, config.WebUI.IP);
     };
+
+    // Create a quick n dirty config variable which concats the LogSee Server URI together (LSSURI (LogSee Server URI))
+    config.LSSURI = `${config.Client.LogSee_Protocol}://${config.Client.LogSee_Host}:${config.Client.LogSee_Port}`;
+    console.log('LSSURI Crafted:', config.LSSURI);
+
     console.log('Client Initialized.');
     callback(true);
 };
@@ -82,7 +87,7 @@ function Authenticate(callback) {
     };
 
     // Ask if our AuthKey matches that of the servers
-    request.post({url: 'http://127.0.0.1:1339/api/authenticate', json: {'AuthKey': config.Client.LogSee_Key, 'UniqueKey': data.UniqueKey}}, function(err, response, body) {
+    request.post({url: `${config.LSSURI}/api/authenticate`, json: {'AuthKey': config.Client.LogSee_Key, 'UniqueKey': data.UniqueKey}}, function(err, response, body) {
         if (response) {
             console.log('ServerAuth Response:', response.statusCode, body.Message);
             if (response.statusCode == 200) {
@@ -120,7 +125,7 @@ function Authenticate(callback) {
 function ScanFiles() {
 
     // Send all these files to the API to ensure they're in the DB, and get back data on any metadata of our files.
-    request.post({url: 'http://127.0.0.1:1339/api/addfiles', json: {"Data": filesArray, "UniqueKey": data.UniqueKey}}, function(err, response, body) {
+    request.post({url: `${config.LSSURI}/api/addfiles`, json: {"Data": filesArray, "UniqueKey": data.UniqueKey}}, function(err, response, body) {
         if (response) {
             if (response.statusCode == 200) {
                 filesArray = body.Message;
@@ -172,7 +177,7 @@ function ScanFiles() {
                     });
 
                     // What was the last line we sent for this file?
-                    // request.post({url: 'http://127.0.0.1:1339/api/getfile', json: {"Data": filesArray[f], "UniqueKey": data.UniqueKey}}, function(err, response, body) {
+                    // request.post({url: `${config.LSSURI}/api/getfile`, json: {"Data": filesArray[f], "UniqueKey": data.UniqueKey}}, function(err, response, body) {
                     //     if (response) {
                     //         console.log(response.statusCode, body.Message)
                     //         if (response.statusCode == 200) {
@@ -198,7 +203,7 @@ function ScanFiles() {
 // Compares a file object to the database and returns true if there are differences as a.
 function CompareFileToDB(fileObj) {
     return new Promise(function(resolve, reject) {
-        request.post({url: 'http://127.0.0.1:1339/api/getfile', json: {"Data": fileObj, "UniqueKey": data.UniqueKey}}, function(err, response, body) {
+        request.post({url: `${config.LSSURI}/api/getfile`, json: {"Data": fileObj, "UniqueKey": data.UniqueKey}}, function(err, response, body) {
             if (response.statusCode == 200) {
                 //console.log('CompareToFile:', fileObj.size, body.Size, fileObj.lastLine, body.LastLine);
                 if (body.Size != fileObj.size || body.LastLine != fileObj.lastLine) {
@@ -214,7 +219,7 @@ function CompareFileToDB(fileObj) {
                     "Message": `Failed to get a reponse(200) from central LogSee server when comparing a local file to the datbase when it was changed. Got response ${response.statusCode} instead.`,
                     "Traceback": null
                 }
-                request.post({url: 'http://127.0.0.1:1339/api/errorhandle', json: {"Data": errData, "UniqueKey": data.UniqueKey}}, function(err, response, body) {
+                request.post({url: `${config.LSSURI}/api/errorhandle`, json: {"Data": errData, "UniqueKey": data.UniqueKey}}, function(err, response, body) {
                     if (err || !response) {
                         throw `Issue sending alert to database, is the central LogSee server running? - ${errData.Message}`
                     }
@@ -251,7 +256,7 @@ function readFromLine(fileObj, endNumber = 0, startNumber = 0, encoding = 'utf8'
 function Pinger() {
     setInterval(function() {
         console.log('Ping');
-        request.post({url: 'http://127.0.0.1:1339/api/pingpong', json: {'UniqueKey': data.UniqueKey} });
+        request.post({url: `${config.LSSURI}/api/pingpong`, json: {'UniqueKey': data.UniqueKey} });
     }, config.Client.PingInterval * 1000);
 };
 
