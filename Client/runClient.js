@@ -20,7 +20,8 @@ function getFileMetadata(filepath) {
         filename: path.basename(filepath),
         filepath: filepath,
         size: fs.statSync(filepath).size,
-        lastLine: 0
+        lastLine: 0,
+        fileData: null
     };
 };
 
@@ -97,12 +98,10 @@ function Authenticate(callback) {
                 } else if (response.statusCode == 201) { // The server recognised we're a newly connecting client and has given us a unique key
                     data.UniqueKey = body.UniqueKey;
                     UpdateData();
-                    makeAuthReq();
+                    setTimeout(function() {makeAuthReq();}, 30000); // Check again every 30s
                 } else if (response.statusCode == 401) { // Awaiting approval
                     console.log('Waiting 30s to try again...');
-                    setTimeout(function() {
-                        makeAuthReq();
-                    }, 30000); // Check again every 30s
+                    setTimeout(function() {makeAuthReq();}, 30000); // Check again every 30s
                 } else if (response.statusCode == 403) { // Denied. Go away!
                     process.exit();
                 } else if (response.statusCode == 404) { // No unqiue key record was found, wipe our key and try again
@@ -113,9 +112,7 @@ function Authenticate(callback) {
                 };
             } else if (err) {
                 console.log('Could not contact the LogSee server:', err.message);
-                setTimeout(function() {
-                    makeAuthReq();
-                }, 30000) // Check again every 30s
+                setTimeout(function() {makeAuthReq();}, 30000) // Check again every 30s
             };
         });
     };
@@ -155,45 +152,36 @@ function ScanFiles() {
                         // Todo: Set notify message
                     };
 
-                    // Todo: Notify user via something
+                    // Todo: Notify user via something, prolly request server API to notify user.
 
                 } else if (eventType == "change") {
-                    console.log(filename, 'was modified.');
-
-                    // Update our memory copy of the file
-                    filesArray[f].size = fs.statSync(filesArray[f].filepath).size,
+                    console.log(`Modification on ${filesArray[f].filename} detected. Comparing to database...`);
+                    filesArray[f].size = fs.statSync(filesArray[f].filepath).size, // Update our memory copy of the file
 
                     CompareFileToDB(filesArray[f])
                     .then(changes => {
                         if (changes) {
-                            console.log('Changes discovered.');
+                            console.log(`Sending detected changes in ${filesArray[f].filename} to database.`);
 
-                            let dataToSend = JSON.stringify(readFromLine(filesArray[f], filesArray[f].lastLine));
+                            // Strigify and compress array json returned from readFromLine(), which contains the files data as a list for each line.
+                            let compressedFileData = JSON.stringify(readFromLine(filesArray[f], filesArray[f].lastLine));
+                            filesArray[f].fileData = zlib.deflateSync(compressedFileData).toString('base64');
 
-                            //Compress that data
-                            console.log(dataToSend);
-                            console.log('Compressed Data:');
-                            console.log(zlib.deflateSync(dataToSend).toString('base64'));
+                            // Send the entire file object over the database
+                            //console.log(`Sending compressed file (${filesArray[f].filename}) data to server.`);
+                            //filesArray[f].ID = 345897;
+                            request.post({url: `${config.LSSURI}/api/addseries`, json: {"Data": filesArray[f], "UniqueKey": data.UniqueKey}}, function(err, response, body) {
+
+                                if (response) {
+                                    
+                                };
+
+                                if (err) {
+                                    console.log(`[WARNING] ${err}`);
+                                };
+                            });
                         };
                     });
-
-                    // What was the last line we sent for this file?
-                    // request.post({url: `${config.LSSURI}/api/getfile`, json: {"Data": filesArray[f], "UniqueKey": data.UniqueKey}}, function(err, response, body) {
-                    //     if (response) {
-                    //         console.log(response.statusCode, body.Message)
-                    //         if (response.statusCode == 200) {
-                    //             console.log('Line Data for changes file');
-                    //             console.log(body.Message);
-                    //             // Read the file and pull the data from said line.
-                    //             var from_line = 3;
-                    //             // Insert data into LogSeries for this file.
-                    //             if (filesArray[f].size != body.Message.size) {
-                    //                 // Todo
-                    //             }
-                    //             // Update LogFile record to new size and lastline.
-                    //         };
-                    //     };
-                    // });
                 };
             };
         });
@@ -217,7 +205,7 @@ function CompareFileToDB(fileObj) {
                 // Todo: Make the request to the API point for handling errors
                 let errData = {
                     "Severity": 'ANOMOLY',
-                    "Message": `Failed to get a reponse(200) from central LogSee server when comparing a local file to the datbase when it was changed. Got response ${response.statusCode} instead.`,
+                    "Message": `Failed to get a reponse(200) from central LogSee server when comparing a local file to the database when it was changed. Got response ${response.statusCode} instead.`,
                     "Traceback": null
                 }
                 request.post({url: `${config.LSSURI}/api/errorhandle`, json: {"Data": errData, "UniqueKey": data.UniqueKey}}, function(err, response, body) {

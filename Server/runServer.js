@@ -214,8 +214,49 @@ app.post('/api/getfile', function(req, res) {
 });
 
 app.post('/api/addseries', function(req, res) {
-    // Adds a new LogSeries record.
+    // Adds a new LogSeries record and updates the DB copy of the file accordingly
+    res.setHeader('Content-Type', 'application/json'); // Make all our responses json format
 
+    checkClientPromise(req.body.UniqueKey, res)
+    .then(record => {
+        console.log('Got Data');
+        console.log(req.body.Data);
+        // Update the appropiate `LogFiles` file metadata
+        LogFiles.update(
+            {
+                LastLine: req.body.Data.lastLine,
+                Size: req.body.Data.size,
+            }, 
+            {
+                where: {
+                    ID: req.body.Data.ID,
+                    $and: {
+                        ClientID: record.ID,
+                        Filename: req.body.Data.filename,
+                        Filepath: req.body.Data.filepath
+                    }
+                }
+            }
+        )
+        .then(result => {
+            if (result == 1) { // If a row was updated
+                console.log(`AddSeries: LogFile ${req.body.Data.ID} was updated with new metadata`);
+                res.status(200).send();
+            } else {
+                console.log('SENDING 400');
+                res.status(404).send();
+            }
+        });
+
+        // Add the data to the series table.
+        LogSeries.build({
+            LogFileID: req.body.Data.ID,
+            Data: req.body.Data.fileData
+        }).save().then(record => {
+            console.log(`AddSeries: Created series with ID ${record.ID}`);
+        });
+
+    });
 });
 
 app.post('/api/updatefile', function(req, res) {
