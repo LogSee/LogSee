@@ -1,4 +1,8 @@
-console.log('Initializing WebUI...');
+if (process.version[1] != "8") { // Version check
+    console.log('[WARNING] - Not running Node v8!')
+    process.exit();
+};
+
 var bodyParser = require('body-parser');    // npm install trash   ...oh wait no...    body-parser
 var Sequelize = require('sequelize');       // npm install sequelize, mysql2    (database ORM)
 var express = require('express');           // npm install express      (for serving web stuff)
@@ -9,6 +13,7 @@ var fs = require('fs');
 //var tedious = require('tedious')          // npm install tedious      (for talking to Microsoft SQL)
 
 // Create express app
+console.log('Initializing WebUI...');
 let app = new express();
 var config = JSON.parse(fs.readFileSync(path.join(__dirname + '/config.json'), 'utf8'));
 
@@ -37,7 +42,7 @@ const LogSeries = sequelize.import(path.join(__dirname + '/Database/models/LogSe
 const ServerStatus = sequelize.import(path.join(__dirname + '/Database/models/ServerStatus.js'))
 const NotificationsQueue = sequelize.import(path.join(__dirname + '/Database/models/NotificationsQueue.js'))
 
-// URL Routes
+// URL / WebUI Routes
 app.get('/', function(req, res) {
     res.sendFile(path.join(__dirname + '/WebUI/templates/index.html'));
 });
@@ -209,8 +214,49 @@ app.post('/api/getfile', function(req, res) {
 });
 
 app.post('/api/addseries', function(req, res) {
-    // Adds a new LogSeries record.
+    // Adds a new LogSeries record and updates the DB copy of the file accordingly
+    res.setHeader('Content-Type', 'application/json'); // Make all our responses json format
 
+    checkClientPromise(req.body.UniqueKey, res)
+    .then(record => {
+        console.log('Got Data');
+        console.log(req.body.Data);
+        // Update the appropiate `LogFiles` file metadata
+        LogFiles.update(
+            {
+                LastLine: req.body.Data.lastLine,
+                Size: req.body.Data.size,
+            }, 
+            {
+                where: {
+                    ID: req.body.Data.ID,
+                    $and: {
+                        ClientID: record.ID,
+                        Filename: req.body.Data.filename,
+                        Filepath: req.body.Data.filepath
+                    }
+                }
+            }
+        )
+        .then(result => {
+            if (result == 1) { // If a row was updated
+                console.log(`AddSeries: LogFile ${req.body.Data.ID} was updated with new metadata`);
+                res.status(200).send();
+            } else {
+                console.log('SENDING 400');
+                res.status(404).send();
+            }
+        });
+
+        // Add the data to the series table.
+        LogSeries.build({
+            LogFileID: req.body.Data.ID,
+            Data: req.body.Data.fileData
+        }).save().then(record => {
+            console.log(`AddSeries: Created series with ID ${record.ID}`);
+        });
+
+    });
 });
 
 app.post('/api/updatefile', function(req, res) {
@@ -264,7 +310,6 @@ const checkClientPromise = function(UniqueKey_Var, res) { // res needed to send 
     })
     .catch(err => reject(err));
 };
-
 
 // Run WebUI
 app.listen(config.WebUI.Port, config.WebUI.IP);

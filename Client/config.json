@@ -1,15 +1,15 @@
 {
     "Client": {
         "ClientSideFiltering":  false,
-        "LogSee_Host":          "51.51.51.51",
-	    "LogSee_Port":          1338,
-        "LogSee_Key":           "f876f98ds9f8s6d98df9g869fdhdfh",
-        "LogSee_Https":         false,
+        "LogSee_Host":          "127.0.0.1",
+        "LogSee_Port":          1338,
+        "LogSee_Key":           "xxxxxxxxxxx",
+        "LogSee_Protocol":      "http",
         "PingInterval":         300
     },
     "WebUI": {
         "Enabled": true,
-        "Port": 8337,
+        "Port": 1337,
         "IP": "0.0.0.0",
         "RequireAuth": true,
         "AuthUser": "admin",
