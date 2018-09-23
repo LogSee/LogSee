@@ -31,6 +31,13 @@
           "Enabled" :true,
           "SlackWebhookURL" : "http://slackwebhookurl.seedocumentation.logsee.lolz"
       }
-   }
+   },
+   "LDAP": {
+    "Enabled" : false,
+    "DomainName" : "ad.logsee.local",
+    "LDAPServer" : "nc-ad.nerdcave.us",
+    "Username" : "AD\\LogSeeSvc",
+    "Password" : "magicalrandompasswordthatisubersafeandubersecure"
+    }   
 
 }
