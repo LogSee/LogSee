@@ -122,6 +122,7 @@ function Authenticate(callback) {
 // Iterates over the configured files and checks for file changes, reports them.
 function ScanFiles() {
 
+    
     // Send all these files to the API to ensure they're in the DB, and get back data on any metadata of our files.
     request.post({url: `${config.LSSURI}/api/addfiles`, json: {"Data": filesArray, "UniqueKey": data.UniqueKey}}, function(err, response, body) {
         if (response) {
@@ -139,7 +140,7 @@ function ScanFiles() {
             if (filename) {
 
                 if (fsWait) return; // Limit the method to only return once when detected change (fs.watch() is a lil buggy) by ignoring it for 100ms after first event.
-                fsWait = setTimeout(() => {fsWait = false;}, 100);
+                fsWait = setTimeout(() => {fsWait = false;}, 300);
 
                 if (eventType == "rename") {
                     // ohh BALLS! The file has been renamed, way to go silly user!
@@ -163,23 +164,26 @@ function ScanFiles() {
                         if (changes) {
                             console.log(`Sending detected changes in ${filesArray[f].filename} to database.`);
 
+                            console.log('Streaming from line', filesArray[f].lastLine);
+                            streamFromLine(filesArray[f], filesArray[f].lastLine);
+
                             // Strigify and compress array json returned from readFromLine(), which contains the files data as a list for each line.
-                            let compressedFileData = JSON.stringify(readFromLine(filesArray[f], filesArray[f].lastLine));
-                            filesArray[f].fileData = zlib.deflateSync(compressedFileData).toString('base64');
+                            // let compressedFileData = JSON.stringify(readFromLine(filesArray[f], filesArray[f].lastLine));
+                            // filesArray[f].fileData = zlib.deflateSync(compressedFileData).toString('base64');
 
                             // Send the entire file object over the database
                             //console.log(`Sending compressed file (${filesArray[f].filename}) data to server.`);
                             //filesArray[f].ID = 345897;
-                            request.post({url: `${config.LSSURI}/api/addseries`, json: {"Data": filesArray[f], "UniqueKey": data.UniqueKey}}, function(err, response, body) {
+                            // request.post({url: `${config.LSSURI}/api/addseries`, json: {"Data": filesArray[f], "UniqueKey": data.UniqueKey}}, function(err, response, body) {
 
-                                if (response) {
+                            //     if (response) {
                                     
-                                };
+                            //     };
 
-                                if (err) {
-                                    console.log(`[WARNING] ${err}`);
-                                };
-                            });
+                            //     if (err) {
+                            //         console.log(`[WARNING] ${err}`);
+                            //     };
+                            // });
                         };
                     });
                 };
@@ -219,26 +223,80 @@ function CompareFileToDB(fileObj) {
 };
 
 // Opens and parses a file and returns the data from a specified line to the end.
-function readFromLine(fileObj, endNumber = 0, startNumber = 0, encoding = 'utf8') {
-    // Read the file, LF (Line Feed) = \n, CR (Crridge Return) = \r
-    fOpen = fs.readFileSync(fileObj.filepath, {encoding: encoding});
-    fOpen = fOpen.replace(/\r\n|\n\n|\r/g, '\n').split('\n');           // Replace all kinds of breaks with a single new line break.
-    //fOpen = fOpen.split(/\r\n|\n|\r]/);                               // Or actually read all the line breaks
+function streamFromLine(fileObj, endNumber = 0, startNumber = 0, encoding = 'utf8') {
+
+    const readStream = fs.createReadStream(fileObj.filepath);
+    let output = '';
+    let chunkCounter = 0;
+    let lineCounter = 0;
+    let startLineFound = false;
+    let precountedTotalChunks = 0;
+
+
+    // Now go over it for real.
+    readStream
+    .on('data', chunk => {
+
+        var chunkLinesInArray = chunk.toString(encoding).replace(/\r\n|\n\n|\r/g, '\n').split('\n')
+        
+        console.log(`Chunk ${chunkCounter} (${chunk.length}) has ${chunkLinesInArray.length} lines. (${lineCounter} lines read so far)`)
+
+        if (lineCounter > endNumber) {
+
+            if (!startLineFound) { // When we find the chunk our line begins in, delete everything before the starting line.
+                startLineWithinChunk = lineCounter - endNumber;
+                chunkLinesInArray.splice(0, startLineWithinChunk);
+                startLineFound = true;
+            };
+            console.log(chunkLinesInArray)
+
+            // If this is the last chunk, identify if the file is using trailing lines or not.
+            if (chunk.length < 65536) { // Warning, may break on very rare edge-cases where the chunk == 65536 and is INFACT the last chunk.
+                console.log('I am the last chunk');
+                console.log(chunkLinesInArray);
+
+                // If the last item is an empty trailing line, remove it and set the files lastLine value to the lineCounter val.
+                if (chunkLinesInArray[chunkLinesInArray.length - 1] == "") {
+                    chunkLinesInArray.pop();
+                };
+            };
+        };
+        lineCounter += chunkLinesInArray.length;
+        chunkCounter++;
+    })
+    .on('end', function() {
+        console.log(lineCounter);
+    })
+
+    return 'OK';
+
+
+
+
+
+
+
+
+
+    // // Read the file, LF (Line Feed) = \n, CR (Crridge Return) = \r
+    // fOpen = fs.readFileSync(fileObj.filepath, {encoding: encoding});
+    // fOpen = fOpen.replace(/\r\n|\n\n|\r/g, '\n').split('\n');           // Replace all kinds of breaks with a single new line break.
+    // //fOpen = fOpen.split(/\r\n|\n|\r]/);                               // Or actually read all the line breaks
     
-    console.log(`LastLine of file ${fileObj.filename} was changed from ${fileObj.lastLine} to ${fOpen.length}`);
-    fileObj.lastLine = fOpen.length;
+    // console.log(`LastLine of file ${fileObj.filename} was changed from ${fileObj.lastLine} to ${fOpen.length}`);
+    // fileObj.lastLine = fOpen.length;
 
-    // Does this log file leave an empty trailing line like it's supposed to?
-    if (fOpen[fOpen.length - 1]) {
-        var offset = 0; // Not trailing
-    } else {
-        var offset = 1; // Trailing
-    }
+    // // Does this log file leave an empty trailing line like it's supposed to?
+    // if (fOpen[fOpen.length - 1]) {
+    //     var offset = 0; // Not trailing
+    // } else {
+    //     var offset = 1; // Trailing
+    // }
 
-    fOpen.splice(startNumber, endNumber - offset); // Delete from 0 to lineNumber so the number after LineNumber becomes the new starting position.
-    if (offset == 1) fOpen.pop(); // Dont commit the empty last trailing line...
+    // fOpen.splice(startNumber, endNumber - offset); // Delete from 0 to lineNumber so the number after LineNumber becomes the new starting position.
+    // if (offset == 1) fOpen.pop(); // Dont commit the empty last trailing line...
 
-    return fOpen;
+    // return fOpen;
 };
 
 // Lets the server know we're still alive every config.Client.PingInterval seconds if
