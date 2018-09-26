@@ -35,10 +35,12 @@ function Init(callback) {
         if (fs.existsSync(config.PathsToScan[f].Location)) {                                            // If the file or dir exists
             if (fs.lstatSync(config.PathsToScan[f].Location).isFile()) {                                // If it's a file we're looking at
                 filesArray.push(getFileMetadata(config.PathsToScan[f].Location));                       // Populate and push
+                console.log(`[Success] Found file ${config.PathsToScan[f].Location}`);
             } else if (fs.lstatSync(config.PathsToScan[f].Location).isDirectory()) {                    // Elif its a dir
                 fs.readdirSync(config.PathsToScan[f].Location).forEach(function(filename) {             // for every item in dir
                     if (path.extname(filename) == ".log") {                                             // If it's a .log and nothing but a .log file
                         filesArray.push(getFileMetadata(config.PathsToScan[f].Location + filename));    // Populate and push
+                        console.log(`[Success] Found file ${config.PathsToScan[f].Location}`);
                     };
                 });
             } else {
@@ -121,8 +123,6 @@ function Authenticate(callback) {
 
 // Iterates over the configured files and checks for file changes, reports them.
 function ScanFiles() {
-
-    
     // Send all these files to the API to ensure they're in the DB, and get back data on any metadata of our files.
     request.post({url: `${config.LSSURI}/api/addfiles`, json: {"Data": filesArray, "UniqueKey": data.UniqueKey}}, function(err, response, body) {
         if (response) {
@@ -164,27 +164,30 @@ function ScanFiles() {
                         if (changes) {
                             console.log(`Sending detected changes in ${filesArray[f].filename} to database.`);
 
-                            console.log('Streaming from line', filesArray[f].lastLine);
-                            streamFromLine(filesArray[f], filesArray[f].lastLine);
+                            // Read the data from the file via 'partial-memory-streaming' I guess? I just made that word.
+                            streamFromLine(filesArray[f], filesArray[f].lastLine).then(memData => {
+                                if (memData) {
+                                    //Strigify and compress array json returned from readFromLine(), which contains the files data as a list for each line.
+                                    let compressedFileData = JSON.stringify(memData);
+                                    filesArray[f].fileData = zlib.deflateSync(compressedFileData).toString('base64');
 
-                            // Strigify and compress array json returned from readFromLine(), which contains the files data as a list for each line.
-                            // let compressedFileData = JSON.stringify(readFromLine(filesArray[f], filesArray[f].lastLine));
-                            // filesArray[f].fileData = zlib.deflateSync(compressedFileData).toString('base64');
+                                    console.log('My byte size is approximately', JSON.stringify(filesArray[f]).length);
 
-                            // Send the entire file object over the database
-                            //console.log(`Sending compressed file (${filesArray[f].filename}) data to server.`);
-                            //filesArray[f].ID = 345897;
-                            // request.post({url: `${config.LSSURI}/api/addseries`, json: {"Data": filesArray[f], "UniqueKey": data.UniqueKey}}, function(err, response, body) {
-
-                            //     if (response) {
-                                    
-                            //     };
-
-                            //     if (err) {
-                            //         console.log(`[WARNING] ${err}`);
-                            //     };
-                            // });
-                        };
+                                    //Send the entire file object over the database
+                                    console.log(`Sending compressed file (${filesArray[f].filename}) data to server.`);
+                                    request.post({url: `${config.LSSURI}/api/addseries`, json: {"Data": filesArray[f], "UniqueKey": data.UniqueKey}}, function(err, response, body) {
+                                        if (response) {
+                                            console.log(response.body);
+                                        };
+                                        if (err) {
+                                            console.log(`[WARNING] ${err}`);
+                                        };
+                                    });
+                                };
+                            })
+                        } else {
+                            console.log('Database says we are in sync.');
+                        }
                     });
                 };
             };
@@ -223,80 +226,64 @@ function CompareFileToDB(fileObj) {
 };
 
 // Opens and parses a file and returns the data from a specified line to the end.
+// FUCK this needs to be a promise... UGHH!
 function streamFromLine(fileObj, endNumber = 0, startNumber = 0, encoding = 'utf8') {
+    return new Promise(function(resolve, reject) {
+        const readStream = fs.createReadStream(fileObj.filepath);
+        let chunkCounter = 0;
+        let lineCounter = 0;
+        let sizeCounter = 0;
+        let startLineFound = false;
+        let memData = null;
+        let chunkLinesInArray = null;
 
-    const readStream = fs.createReadStream(fileObj.filepath);
-    let output = '';
-    let chunkCounter = 0;
-    let lineCounter = 0;
-    let startLineFound = false;
-    let precountedTotalChunks = 0;
+        console.log(`Reading file from line ${endNumber}`);
 
+        // Read stream
+        readStream.on('data', chunk => {
+            let chunkLinesInArray = chunk.toString(encoding).replace(/\r\n|\n\n|\r/g, '\n').split('\n');
+            lineCounter += chunkLinesInArray.length;
+            console.log(`Reading Chunk ${chunkCounter} (${chunk.length}, ${chunkLinesInArray.length} lines), ${lineCounter} lines read in total`)
 
-    // Now go over it for real.
-    readStream
-    .on('data', chunk => {
+            if (lineCounter >= endNumber) { // Todo: Fix this bug, it's not starting in the correct area and im too tired XD
+                if (!startLineFound) { // When we find the chunk our line begins in, delete everything before the starting line.
+                    startLineWithinChunk = lineCounter - endNumber; // This is the problem.
+                    chunkLinesInArray.splice(0, startLineWithinChunk);
+                    startLineFound = true;
+                };
 
-        var chunkLinesInArray = chunk.toString(encoding).replace(/\r\n|\n\n|\r/g, '\n').split('\n')
-        
-        console.log(`Chunk ${chunkCounter} (${chunk.length}) has ${chunkLinesInArray.length} lines. (${lineCounter} lines read so far)`)
+                // If this is the last chunk, identify if the file is using trailing lines or not.
+                if (chunk.length < 65536) { // Warning: may break on very rare edge-cases where the chunk == 65536 and is INFACT the last chunk.
+                    if (chunkLinesInArray[chunkLinesInArray.length - 1] == "") { // If the last item is an empty trailing line, remove it and set the files lastLine value to the lineCounter val.
+                        chunkLinesInArray.pop();
+                    };
+                };
 
-        if (lineCounter > endNumber) {
-
-            if (!startLineFound) { // When we find the chunk our line begins in, delete everything before the starting line.
-                startLineWithinChunk = lineCounter - endNumber;
-                chunkLinesInArray.splice(0, startLineWithinChunk);
-                startLineFound = true;
-            };
-            console.log(chunkLinesInArray)
-
-            // If this is the last chunk, identify if the file is using trailing lines or not.
-            if (chunk.length < 65536) { // Warning, may break on very rare edge-cases where the chunk == 65536 and is INFACT the last chunk.
-                console.log('I am the last chunk');
-                console.log(chunkLinesInArray);
-
-                // If the last item is an empty trailing line, remove it and set the files lastLine value to the lineCounter val.
-                if (chunkLinesInArray[chunkLinesInArray.length - 1] == "") {
-                    chunkLinesInArray.pop();
+                // whatever we're left with is good. Store this shit to memory.
+                if (!memData) {
+                    memData = chunkLinesInArray;
+                } else {
+                    memData = [...memData, ...chunkLinesInArray] // Well as we all know back in ES5, array1.concat(array2) was WAAAYYYYY TO HARD to read, LITERALLY UNREADABLE. This new ES6 method though. OOFT.. PERFECTLY READABLE. MUCH IMPROVED. #YORO
                 };
             };
-        };
-        lineCounter += chunkLinesInArray.length;
-        chunkCounter++;
-    })
-    .on('end', function() {
-        console.log(lineCounter);
-    })
-
-    return 'OK';
-
-
-
-
-
-
-
-
-
-    // // Read the file, LF (Line Feed) = \n, CR (Crridge Return) = \r
-    // fOpen = fs.readFileSync(fileObj.filepath, {encoding: encoding});
-    // fOpen = fOpen.replace(/\r\n|\n\n|\r/g, '\n').split('\n');           // Replace all kinds of breaks with a single new line break.
-    // //fOpen = fOpen.split(/\r\n|\n|\r]/);                               // Or actually read all the line breaks
-    
-    // console.log(`LastLine of file ${fileObj.filename} was changed from ${fileObj.lastLine} to ${fOpen.length}`);
-    // fileObj.lastLine = fOpen.length;
-
-    // // Does this log file leave an empty trailing line like it's supposed to?
-    // if (fOpen[fOpen.length - 1]) {
-    //     var offset = 0; // Not trailing
-    // } else {
-    //     var offset = 1; // Trailing
-    // }
-
-    // fOpen.splice(startNumber, endNumber - offset); // Delete from 0 to lineNumber so the number after LineNumber becomes the new starting position.
-    // if (offset == 1) fOpen.pop(); // Dont commit the empty last trailing line...
-
-    // return fOpen;
+            sizeCounter += chunk.length;
+            chunkCounter++;
+        }).on('end', function() {
+            if (chunkLinesInArray) {
+                chunkLinesInArray = null; // Erase from memory
+            };
+            if (memData) {
+                fileObj.lastLine = lineCounter;
+                fileObj.size = sizeCounter;
+                console.log('IVE READ UP TO LINE', lineCounter);
+                console.log('Last Line:', memData[memData.length - 1]);
+                console.log('Data to be sent:', memData);
+                resolve(memData);
+            } else {
+                reject(false);
+            }
+        });
+    }).catch(err => err);
 };
 
 // Lets the server know we're still alive every config.Client.PingInterval seconds if

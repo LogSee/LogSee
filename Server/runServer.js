@@ -242,7 +242,7 @@ app.post('/api/addseries', function(req, res) {
         .then(result => {
             if (result == 1) { // If a row was updated
                 console.log(`AddSeries: LogFile ${req.body.Data.ID} was updated with new metadata`);
-                res.status(200).send();
+                res.status(200).send({'Message': `Success. Created ID: ${req.body.Data.ID}`});
             } else {
                 console.log('SENDING 400');
                 res.status(404).send();
@@ -289,6 +289,7 @@ app.post('/api/errorhandle', function(req, res) {
         // Todo: Notify user
     })
 });
+
 
 // Helper functions
 const checkClientPromise = function(UniqueKey_Var, res) { // res needed to send automatic denial responses.
