@@ -226,7 +226,6 @@ function CompareFileToDB(fileObj) {
 };
 
 // Opens and parses a file and returns the data from a specified line to the end.
-// FUCK this needs to be a promise... UGHH!
 function streamFromLine(fileObj, endNumber = 0, startNumber = 0, encoding = 'utf8') {
     return new Promise(function(resolve, reject) {
         const readStream = fs.createReadStream(fileObj.filepath);
@@ -259,7 +258,7 @@ function streamFromLine(fileObj, endNumber = 0, startNumber = 0, encoding = 'utf
                     };
                 };
 
-                // whatever we're left with is good. Store this shit to memory.
+                // whatever we're left with is good. Store this to memory.
                 if (!memData) {
                     memData = chunkLinesInArray;
                 } else {
