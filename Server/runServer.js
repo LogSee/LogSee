@@ -17,10 +17,11 @@ console.log('Initializing WebUI...');
 let app = new express();
 var config = JSON.parse(fs.readFileSync(path.join(__dirname + '/config.json'), 'utf8'));
 
-// Setup a post body parser because for some stupid reason this isn't default
-app.use(bodyParser.json());                                 // for parsing application/json
-app.use(bodyParser.urlencoded({ extended: true }));         // for parsing application/x-www-form-urlencoded
-app.use(express.static(path.join(__dirname + '/WebUI/static')));  // Static routes
+// Setup a post body parser and set its limit, Unlikely that the client will ever be sending 500mb+ of data across at a given time...
+// Todo: Catch this - https://github.com/expressjs/body-parser#request-entity-too-large
+app.use(bodyParser.json({limit: '500mb'}));                         // for parsing application/json
+app.use(bodyParser.urlencoded({extended: true, limit: '500mb'}));   // for parsing application/x-www-form-urlencoded
+app.use(express.static(path.join(__dirname + '/WebUI/static')));    // Static routes
 
 // Create ORM
 const sequelize = new Sequelize(config.Server.SQL_DB, config.Server.SQL_User, config.Server.SQL_Pass, {
