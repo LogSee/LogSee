@@ -12,9 +12,20 @@ let app = new express();
 // Define Static files
 app.use(express.static(path.join(__dirname + '/static')));
 var config = JSON.parse(fs.readFileSync(__dirname + '/../config.json', 'utf8'));
+var data = JSON.parse(fs.readFileSync(__dirname + '/../.data.json', 'utf8'));
+
+// Keeps the data file up to date when changing the data variable
+function UpdateData() {
+    fs.writeFileSync(path.join(__dirname + '/../.data.json'), JSON.stringify(data)); // Todo: Needs sorting out with how files are launched.
+};
 
 // Routes
 app.get('/', function(req, res) {
+    if (!data.firstTime) { // First time loading the webUI, Todo: give them the config walkthrough
+        data.firstTime = true;
+        UpdateData();
+        // Todo: Send a variable to the renderer.
+    };
     res.sendFile(path.join(__dirname + '/views/index.html'));
 });
 app.get('/configure', function(req, res) {

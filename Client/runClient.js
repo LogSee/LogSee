@@ -54,6 +54,8 @@ function Init(callback) {
     // Check if we have a .data.json file to store little bits of client info, such as our unique key
     if (fs.existsSync(path.join(__dirname + '/.data.json'))) {                                          // If the .data.json file exists
         data = JSON.parse(fs.readFileSync(path.join(__dirname + '/.data.json'), 'utf8'));               // Read/Load it into the data varaible as json
+    } else {
+        UpdateData();                                                                                   // Else create the file (before the webui launches)
     };
 
     // Launch the webUI as a child if configured
@@ -255,7 +257,7 @@ function streamFromLine(fileObj, endNumber = 0, startNumber = 0, encoding = 'utf
                         console.log('Counted lines:', lineCounter);
                         startLineWithinChunk = chunkLinesInArray.length - (lineCounter - endNumber) - 1;
                     }
-                    console.log(`Starting line located in chunk ${chunkCounter}, array index ${startLineWithinChunk}}`)
+                    console.log(`Starting line located in chunk ${chunkCounter}, array index ${startLineWithinChunk}`)
                     chunkLinesInArray.splice(0, startLineWithinChunk);
                     startLineFound = true;
                 };
