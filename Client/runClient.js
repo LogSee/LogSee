@@ -3,10 +3,10 @@ if (process.version[1] != "8") { // Version check
     process.exit();
 };
 
-var path = require('path');                      // For managing paths, ofcourse.
-var fs = require('fs');                          // Nodes file system
-var request = require('request');                // npm install request!
-var zlib = require('zlib');
+var path = require('path');                     // For managing paths, ofcourse.
+var fs = require('fs');                         // Nodes file system
+var request = require('request');               // npm install request!
+var zlib = require('zlib');                     // For compression
 
 // Variables
 var config = JSON.parse(fs.readFileSync(path.join(__dirname + '/config.json'), 'utf8'));
@@ -230,23 +230,32 @@ function streamFromLine(fileObj, endNumber = 0, startNumber = 0, encoding = 'utf
     return new Promise(function(resolve, reject) {
         const readStream = fs.createReadStream(fileObj.filepath);
         let chunkCounter = 0;
-        let lineCounter = 0;
+        let lineCounter = 0; // Counts each /n within the file over each chunk
         let sizeCounter = 0;
         let startLineFound = false;
         let memData = null;
         let chunkLinesInArray = null;
 
-        console.log(`Reading file from line ${endNumber}`);
+        console.log(`================= Reading file ${fileObj.name} from line ${endNumber} =================`);
 
-        // Read stream
-        readStream.on('data', chunk => {
+        readStream.on('data', chunk => { // Read stream
+
             let chunkLinesInArray = chunk.toString(encoding).replace(/\r\n|\n\n|\r/g, '\n').split('\n');
             lineCounter += chunkLinesInArray.length;
+            if ((chunk.length == 65536) && (chunkLinesInArray[chunkLinesInArray.length - 1].indexOf('\n') == -1)) { // If the last line does not contain an \n, that means it continues on into the next chunk, and so we ammend our counter.
+                lineCounter--; // Subtract 1
+            };
             console.log(`Reading Chunk ${chunkCounter} (${chunk.length}, ${chunkLinesInArray.length} lines), ${lineCounter} lines read in total`)
 
-            if (lineCounter >= endNumber) { // Todo: Fix this bug, it's not starting in the correct area and im too tired XD
-                if (!startLineFound) { // When we find the chunk our line begins in, delete everything before the starting line.
-                    startLineWithinChunk = lineCounter - endNumber; // This is the problem.
+            if (lineCounter >= endNumber) {                         // The starting line is in this chunk
+                if (!startLineFound) {                              // Try and look for the starting line within this chunk.
+                    if (chunkCounter == 0) {                        // If we're the first chunk, dont bother using maths
+                        startLineWithinChunk = endNumber - 1;       // Arrays start at 0. Not 1.
+                    } else {                                        // If we are, we'll need to calculate where the line is due to not being in the first chunk.
+                        console.log('Counted lines:', lineCounter);
+                        startLineWithinChunk = chunkLinesInArray.length - (lineCounter - endNumber) - 1;
+                    }
+                    console.log(`Starting line located in chunk ${chunkCounter}, array index ${startLineWithinChunk}}`)
                     chunkLinesInArray.splice(0, startLineWithinChunk);
                     startLineFound = true;
                 };
@@ -258,7 +267,7 @@ function streamFromLine(fileObj, endNumber = 0, startNumber = 0, encoding = 'utf
                     };
                 };
 
-                // whatever we're left with is good. Store this to memory.
+                // Whatever we're left with is good. Store this to memory.
                 if (!memData) {
                     memData = chunkLinesInArray;
                 } else {
@@ -268,19 +277,24 @@ function streamFromLine(fileObj, endNumber = 0, startNumber = 0, encoding = 'utf
             sizeCounter += chunk.length;
             chunkCounter++;
         }).on('end', function() {
+            fileObj.lastLine = lineCounter;
+            fileObj.size = sizeCounter;
+            
             if (chunkLinesInArray) {
                 chunkLinesInArray = null; // Erase from memory
             };
-            if (memData) {
-                fileObj.lastLine = lineCounter;
-                fileObj.size = sizeCounter;
-                console.log('IVE READ UP TO LINE', lineCounter);
-                console.log('Last Line:', memData[memData.length - 1]);
-                console.log('Data to be sent:', memData);
+
+            if (memData && memData.length > 0) {    // If MemData, resolve it
+                console.log('Sending Data:', memData);
                 resolve(memData);
-            } else {
+            } else {                                // If not, say excuse as to why this fired and reject
+                if (endNumber > lineCounter) {
+                    console.log(`[Warning] Could not read from line ${endNumber} because the file is only ${lineCounter} lines long. You may miss a line of data upon next file change.`);
+                } else {
+                    console.log('[Warning] A change must\'ve occured on a same line. No new line data was found.');
+                }
                 reject(false);
-            }
+            };
         });
     }).catch(err => err);
 };
