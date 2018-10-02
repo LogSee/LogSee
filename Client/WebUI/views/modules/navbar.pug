@@ -1,0 +1,24 @@
+// Navbar
+nav(class="navbar navbar-expand-sm bg-dark navbar-dark")
+
+    // Brand
+    a(class="navbar-brand" href="/") LogSee Client
+
+    // Links
+    ul(class="navbar-nav")
+        li(class="nav-item")
+            a(class="nav-link" href="/configure") Configure
+
+        li(class="nav-item")
+            a(class="nav-link" href="/status") Status
+
+        // Dropdown
+        li(class="nav-item dropdown")
+            a(class="nav-link dropdown-toggle", href="#", id="navbardrop", data-toggle="dropdown") Admin
+            div(class="dropdown-menu")
+                a(class="dropdown-item", href="/admin/restart") Restart Client
+                a(class="dropdown-item", href="/admin/reauth") Force Re-Auth
+                a(class="dropdown-item", href="/admin/about") About Client
+
+            li(class="nav-item")
+            a(class="nav-link", href="/logout") Log Out
