@@ -10,17 +10,34 @@ server.listen(port, function() {
     console.log('Server is running on port ' + port + '…');
 });
 
-var MysqlEvents = require('mysql-events');
+var MySQLEvents = require('mysql-events');
 var dsn = {
-    host: config.Server.SQL_Host,
-    user: config.Server.SQL_User,
-    password: config.Server.SQL_Pass
+  host:     config.Server.SQL_Host,
+  user:     config.Server.SQL_User,
+  password: config.Server.SQL_Pass
 };
-
-var MysqlEventWatcher = MysqlEvents(dsn);
-
-var watcher = MysqlEventWatcher.add('LogSee.LogSeries',function(oldRow, newRow) {
+var mysqlEventWatcher = MySQLEvents(dsn);
+console.log(mysqlEventWatcher);
+var watcher =mysqlEventWatcher.add(
+   'LogSee.LogSeries',
+  function (oldRow, newRow, event) {
+     //row inserted
     if (oldRow === null) {
-        console.log(newRow);
+      //insert code goes here
     }
-});
+
+     //row deleted
+    if (newRow === null) {
+      //delete code goes here
+    }
+
+     //row updated
+    if (oldRow !== null && newRow !== null) {
+      //update code goes here
+    }
+
+    //detailed event information
+    console.log(event); // don't matter, it updates, delete or insert
+  },
+  'Active'
+);
