@@ -1,0 +1,11 @@
+/* Global Modifications */
+
+/* Bootstrap Modifications */
+
+/* Bootstrap addon modifications */
+.table-borderless td,
+.table-borderless th {
+    border: 0;
+}
+
+/* Custom (May want to be seperate file) */
