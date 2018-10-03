@@ -4,12 +4,12 @@
 
 echo "##########################################################"
 echo "##########################################################"
-echo "##						      ##"
-echo "##	     Welcome to LogSee Client		      ##"
+echo "##                                                      ##"
+echo "##             Welcome to LogSee Client                 ##"
 echo "##   Client will be installed in /opt/LogSee/Client     ##"
 echo "##    Please update your config.json after install      ##"
 echo "## To start, run systemctl start LogseeClient.service   ##"
-echo "##						      ##"
+echo "##                                                      ##"
 echo "##########################################################"
 echo "##########################################################"
 
