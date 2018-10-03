@@ -3,24 +3,24 @@
         "ClientSideFiltering":  false,
         "LogSee_Host":          "127.0.0.1",
         "LogSee_Port":          1338,
-        "LogSee_Key":           "xxxxxxxxxxx",
+        "LogSee_Key":           "",
         "LogSee_Protocol":      "http",
         "PingInterval":         300
     },
     "WebUI": {
         "Enabled": true,
-        "Port": 1337,
+        "Port": 8337,
         "IP": "0.0.0.0",
         "RequireAuth": true,
-        "AuthUser": "admin",
-        "AuthPass": "admin"
+        "AuthUser": "admins",
+        "AuthPass": "admins"
     },
     "PathsToScan": [
         {
-            "Location": "C:\\Users\\Anon\\Documents\\GitHub\\LogSee\\DevTools\\sampleLog.log"
+            "Location": "F:\\LogTest\\3q8uos\\"
         },
         {
-            "Location": "C:\\Users\\Anon\\Documents\\GitHub\\LogSee\\DevTools\\sampleLogs\\"
+            "Location": "F:\\LogTest\\test.log"
         }
     ]
 }

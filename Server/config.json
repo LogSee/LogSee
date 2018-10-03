@@ -1,10 +1,10 @@
 {
     "Server": {
-        "SQL_Host": "0.0.0.0",
+        "SQL_Host": "172.16.1.71",
         "SQL_Port": 3306,
         "SQL_DB": "LogSee",
-        "SQL_User": "admin",
-        "SQL_Pass": "admin"
+        "SQL_User": "logsee",
+        "SQL_Pass": "LogSee"
     },
     "WebUI": {
         "Port": 1339,

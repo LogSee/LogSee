@@ -1,0 +1,121 @@
+<div class="container">
+  <div class="wrapper p-2 mt-2 rounded" style="background:white;">
+  
+  <h4>Configuration Menu</h4>
+  <hr/>
+  <p>You can configure the LogSee client here. All values will take an instant effect. </p>
+  <a href="https://github.com/LogSee/LogSee/wiki" target="_blank">Check out the Wiki for more information</a> 
+  <br>
+  <hr/>
+  <h6>Client Settings:</h6>
+
+      <div class="form-group row">
+          <div class="col-sm-1 pr-1">
+              <input type="checkbox" data-toggle="toggle" data-onstyle="success" data-offstyle="danger">
+          </div>
+          <div class="col col-form-label pl-0">
+              <label class="ml-1">Enable Client Side Filtering</label>
+          </div>
+      </div>
+      <div class="form-group row">
+          <div class="col-sm-2">
+              <input type="number" class="form-control" id="ClientScanFreq" placeholder="5000">
+          </div>
+          <div class="col col-form-label pl-0">
+              <label for="ClientScanFreq">Client Scan Frequency (ms)</label>
+          </div>
+      </div>
+      <div class="form-group row">
+              <div class="col-sm-2">
+                  <input type="number" class="form-control" id="PingInterval" placeholder="300">
+              </div>
+              <div class="col col-form-label pl-0">
+                  <label for="PingInterval">Client Ping Interval</label>
+              </div>
+      </div>
+      <hr/>
+      <h6>Client WebUI Settings:</h6>
+      <div class="form-group row">
+          <div class="col-sm-1 pr-1">
+              <input type="checkbox" data-toggle="toggle" data-onstyle="success" data-offstyle="danger">
+          </div>
+          <div class="col col-form-label pl-0">
+              <label class="ml-1">Enable WebUI</label>
+          </div>
+      </div>
+      <div class="form-group row">
+          <div class="col-sm-1 pr-1">
+              <input type="checkbox" data-toggle="toggle" data-onstyle="success" data-offstyle="danger">
+          </div>
+          <div class="col col-form-label pl-0">
+              <label class="ml-1">Enable WebUI Authentication</label>
+          </div>
+      </div>
+      <div class="form-group row">
+          <div class="col-sm-3">
+              <input type="number" class="form-control" id="Port" placeholder="8337">
+          </div>
+          <div class="col col-form-label pl-1">
+              <label for="Port">WebUI Port</label>
+              </div>
+      </div>
+      <div class="form-group row">
+          <div class="col-sm-5">
+              <input type="number" class="form-control" id="IP" placeholder="0.0.0.0">
+          </div>
+          <div class="col col-form-label pl-1">
+              <label for="IP">WebUI IP</label>
+          </div>
+      </div>
+      <div class="form-group row">
+          <div class="col-sm-3">
+              <input type="text" class="form-control" id="LocalAuth_Username" placeholder="admin">
+          </div>
+          <div class="col col-form-label pl-1">
+              <label for="LocalAuth_Username">WebUI Username</label>
+          </div>
+      </div>
+      <div class="form-group row">
+          <div class="col-sm-3">
+              <input type="password" class="form-control" id="LocalAuth_Password" placeholder="*******">
+          </div>
+          <div class="col col-form-label pl-1">
+              <label for="LocalAuth_Username">WebUI Password</label>
+          </div>
+      </div>
+      <hr/>
+      <h6>Central Server Details:</h6>
+      <div class="form-group row">
+          <div class="col-sm-3">
+              <input type="number" class="form-control" id="LogSee_Port" placeholder="1338">
+          </div>
+          <div class="col col-form-label pl-1">
+              <label for="LogSee_Port">Server Port</label>
+              </div>
+      </div>
+      <div class="form-group row">
+          <div class="col-sm-5">
+              <input type="number" class="form-control" id="LogSee_Host" placeholder="172.16.1.69">
+          </div>
+          <div class="col col-form-label pl-1">
+              <label for="LogSee_Host">Server IP</label>
+          </div>
+      </div>
+      <div class="form-group row">
+          <div class="col-sm-5">
+              <input type="text" class="form-control" id="LogSee_Key" placeholder="f876f98ds9f8s6d98df9g869fdhdfh">
+          </div>
+          <div class="col col-form-label pl-0">
+              <label for="LogSee_Key">Authorization Key</label>
+      </div>
+  </div> 
+  <hr/>
+  <h6>Paths to scan:</h6>
+  <!-- This needs to load from the array of the config.json -->
+  <div class="form-group row">
+      <div class="col-sm-5">
+          <input type="text" class="form-control" id="Paths_Array" placeholder="/var/log/LogSee/client.log">
+      </div>
+      <div class="col col-form-label pl-0">
+          <label for="LogSee_Key">Log File path / directory</label>
+  </div>
