@@ -1,7 +1,17 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Component, OnInit } from '@angular/core';
+import { HttpClient } from "@angular/common/http";
 
-@Injectable()
-export class ConfigService {
-  constructor(private http: HttpClient) { }
-}
+this.httpClient.post("http://127.0.0.1:3000/customers",
+{
+    "Client": {
+        "PingInterval": "100"
+    }
+})
+.subscribe(
+    data => {
+        console.log("POST Request is successful ", data);
+    },
+    error => {
+        console.log("Error", error);
+    }
+);       
