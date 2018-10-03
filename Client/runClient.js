@@ -59,8 +59,8 @@ function Init(callback) {
     };
 
     // Launch the webUI as a child if configured
-    if (config.WebUI.Enabled) {
-        require(__dirname + '/WebUI/launchWebUI.js');
+    if (config.WebAPI.Enabled) {
+        require(__dirname + '/WebAPI/launchWebAPI.js');
     };
 
     // Create a quick n dirty config variable which concats the LogSee Server URI together (LSSURI (LogSee Server URI))

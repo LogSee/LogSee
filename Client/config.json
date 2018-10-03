@@ -15,6 +15,9 @@
         "AuthUser": "admins",
         "AuthPass": "admins"
     },
+    "WebAPI": {
+        "Port": 1337
+    },
     "PathsToScan": [
         {
             "Location": "F:\\LogTest\\3q8uos\\"
