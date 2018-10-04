@@ -65,10 +65,10 @@ app.post('/api/editconfig', function(req, res) {
                 } else {
                     // Is this end result in our client config?
                     stack = stack + '/' + property;
-                    //console.log('---------------------')
-                    //console.log(`LF ${property}: ${obj[property]} (${stack})`);
+                    console.log('---------------------')
+                    console.log(`LF ${property}: ${obj[property]} (${stack})`);
                     updateInConfig(stack.split('/').splice(1, stack.length), obj[property])
-                    //console.log(config);
+                    console.log(config);
                 }
             }
         }

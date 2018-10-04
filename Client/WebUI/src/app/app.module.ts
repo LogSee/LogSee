@@ -10,6 +10,11 @@ import { StatusComponent } from './status/status.component';
 import { ConfigureComponent } from './configure/configure.component';
 import { HomeComponent } from './home/home.component';
 
+//Services
+import { MessageService }       from './message.service';
+import { HttpErrorHandler }     from './http-error-handler.service';
+
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -22,7 +27,10 @@ import { HomeComponent } from './home/home.component';
     BrowserModule,
     routingModule
   ],
-  providers: [],
+  providers: [
+    HttpErrorHandler,
+    MessageService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
