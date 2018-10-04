@@ -58,10 +58,9 @@ function Init(callback) {
         UpdateData();                                                                                   // Else create the file (before the webui launches)
     };
 
-    // Launch the webUI as a child if configured
-    if (config.WebAPI.Enabled) {
-        require(__dirname + '/WebAPI/launchWebAPI.js');
-    };
+    // Launch the webAPI regardless
+    require(__dirname + '/WebAPI/launchWebAPI.js');
+
 
     // Create a quick n dirty config variable which concats the LogSee Server URI together (LSSURI (LogSee Server URI))
     config.LSSURI = `${config.Client.LogSee_Protocol}://${config.Client.LogSee_Host}:${config.Client.LogSee_Port}`;

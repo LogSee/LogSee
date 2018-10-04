@@ -1,7 +1,7 @@
 // Note: This file must be launched from runClient.js
 // npm install pug
 // Npm install express
-console.log('Initializing WebUI...')
+console.log('Initializing WebAPI...')
 const express = require('express'); 
 var bodyParser = require('body-parser');    // npm install trash   ...oh wait no...    body-parser
 var fs = require('fs')
@@ -100,6 +100,6 @@ app.post('/api/editconfig', function(req, res) {
     res.status(200).send(output);
 })
 
-// Run WebUI
-app.listen(config.WebUI.Port, config.WebUI.IP);
-console.log(`WebUI listening on http://${config.WebUI.IP}:${config.WebUI.Port}`);
+// Run WebAPI
+app.listen(config.WebAPI.Port, config.WebUI.IP);
+console.log(`WebAPI listening on http://${config.WebUI.IP}:${config.WebAPI.Port}`);
