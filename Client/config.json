@@ -1,11 +1,11 @@
 {
     "Client": {
-        "ClientSideFiltering":  false,
-        "LogSee_Host":          "127.0.0.1",
-        "LogSee_Port":          1339,
-        "LogSee_Key":           "",
-        "LogSee_Protocol":      "http",
-        "PingInterval":         300
+        "ClientSideFiltering": false,
+        "LogSee_Host": "127.0.0.1",
+        "LogSee_Port": 1339,
+        "LogSee_Key": "",
+        "LogSee_Protocol": "http",
+        "PingInterval": 100
     },
     "WebUI": {
         "Enabled": true,
@@ -20,10 +20,7 @@
     },
     "PathsToScan": [
         {
-            "Location": "F:\\LogTest\\3q8uos\\"
-        },
-        {
-            "Location": "F:\\LogTest\\test.log"
+            "Location": "C:\\Users\\Anon\\Documents\\GitHub\\LogSee\\DevTools\\sampleLog.log"
         }
     ]
 }
