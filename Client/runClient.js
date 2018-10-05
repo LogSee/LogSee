@@ -1,5 +1,5 @@
 if (process.version[1] != "8") { // Version check
-    console.log('[WARNING] - Not running Node v8!')
+    console.log('[Critical] - Not running Node v8!')
     process.exit();
 };
 
@@ -10,8 +10,8 @@ var zlib = require('zlib');                     // For compression
 
 // Variables
 var config = JSON.parse(fs.readFileSync(path.join(__dirname + '/config.json'), 'utf8'));
-var filesArray = [];       // Gets populated by init(); An array of all the files and their metadata that need checking on.
-var data = {};          // Gets populated by init(); File the client uses to store small bits of data locally.
+var filesArray = [];        // Gets populated by init(); An array of all the files and their metadata that need checking on.
+var data = {};              // Gets populated by init(); File the client uses to store small bits of data locally.
 
 // Grabs split up metadata such as file name, ext, size, location and returns as dict
 function getFileMetadata(filepath) {
@@ -60,7 +60,6 @@ function Init(callback) {
 
     // Launch the webAPI regardless
     require(__dirname + '/WebAPI/launchWebAPI.js');
-
 
     // Create a quick n dirty config variable which concats the LogSee Server URI together (LSSURI (LogSee Server URI))
     config.LSSURI = `${config.Client.LogSee_Protocol}://${config.Client.LogSee_Host}:${config.Client.LogSee_Port}`;
