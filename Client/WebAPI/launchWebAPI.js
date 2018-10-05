@@ -1,11 +1,11 @@
 // Note: This file must be launched from runClient.js
 // npm install pug
 // Npm install express
-console.log('Initializing WebAPI...')
+console.log('Initializing WebAPI...');
 const express = require('express'); 
 var bodyParser = require('body-parser');    // npm install trash   ...oh wait no...    body-parser
-var fs = require('fs')
-var path = require('path')
+var fs = require('fs');
+var path = require('path');
 var child_process = require("child_process");
 
 // Create express app
@@ -15,8 +15,8 @@ var data = JSON.parse(fs.readFileSync(__dirname + '/../.data.json', 'utf8'));
 
 // Define Static files & renderer
 app.use('/static', express.static(path.join(__dirname + '/static')));
-app.set('view engine', 'pug') // npm install pug !!
-app.set('views', path.join(__dirname + '/views'))
+app.set('view engine', 'pug'); // npm install pug !!
+app.set('views', path.join(__dirname + '/views'));
 app.use(bodyParser.json({limit: '500mb'}));                         // for parsing application/json
 app.use(bodyParser.urlencoded({extended: true, limit: '500mb'}));   // for parsing application/x-www-form-urlencoded
 
@@ -99,7 +99,11 @@ app.post('/api/editconfig', function(req, res) {
     fs.writeFileSync(path.join(__dirname + '/../config.json'), JSON.stringify(config, null, 4)); // Update config file with the new
     res.setHeader('Content-Type', 'application/json'); // Make our responses json format
     res.status(200).send(output);
-})
+});
+
+app.post('/api/stop', function(req, res) {
+    process.exit();
+});
 
 
 // Run WebAPI
