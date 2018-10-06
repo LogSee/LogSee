@@ -19,6 +19,6 @@ export class ConfigureService {
 
   ) { }
     PingInterval() {
-      this.http.post('/api/configure/pinginterval', '{"pinginterval": 200}');
+      return this.http.post('/api/configure/pinginterval', '{"pinginterval": 200}');
     };
 };

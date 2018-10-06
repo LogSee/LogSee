@@ -14,6 +14,6 @@ export class ConfigureComponent implements OnInit {
   }
 
   PingInterval() {
-    this.configureService.PingInterval();
+    this.configureService.PingInterval().subscribe();
  }
 }
