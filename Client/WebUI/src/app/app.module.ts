@@ -29,7 +29,7 @@ import { HttpErrorHandler }     from './http-error-handler.service';
   ],
   providers: [
     HttpErrorHandler,
-    MessageService
+    MessageService,
   ],
   bootstrap: [AppComponent]
 })

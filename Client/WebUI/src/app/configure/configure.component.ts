@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-
+import {ConfigureService} from '../configure.service';
 @Component({
   selector: 'app-configure',
   templateUrl: './configure.component.html',
@@ -7,9 +7,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ConfigureComponent implements OnInit {
 
-  constructor() { }
+  constructor(private configureService: ConfigureService) { }
+
 
   ngOnInit() {
   }
 
+  pingInterval() {
+    this.configureService.PingInterval();
+ }
 }
