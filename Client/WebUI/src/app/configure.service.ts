@@ -23,6 +23,6 @@ export class ConfigureService {
   
 
     PingInterval() {
-      this.http.post('http://127.0.0.1:8337/api/editconfig', {"Client": { "PingInterval": 100 }} , httpOptions );
+      this.http.post('http://172.16.1.51:3000/client/', '{"pinginterval": 200}');
     };
 };
