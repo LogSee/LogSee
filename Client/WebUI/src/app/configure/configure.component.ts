@@ -13,7 +13,7 @@ export class ConfigureComponent implements OnInit {
   ngOnInit() {
   }
 
-  pingInterval() {
+  PingInterval() {
     this.configureService.PingInterval();
  }
 }
