@@ -1,0 +1,10 @@
+{
+    "name": "LogSee Client",
+    "description": "The LogSee client responsible for scanning files and sending data to the LogSee Server.",
+    "author": "Ainsey & Popzi",
+    "dependencies": {
+        "request": "2.88.0",
+        "body-parser": "1.18.3",
+        "express": "4.16.3"
+    }
+}
