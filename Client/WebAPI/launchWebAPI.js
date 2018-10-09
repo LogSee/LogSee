@@ -16,7 +16,7 @@ app.use(bodyParser.json({limit: '500mb'}));                                     
 app.use(bodyParser.urlencoded({extended: true, limit: '500mb'}));               // for parsing application/x-www-form-urlencoded
 
 // Routes
-app.get('*', function(req, res) {                                               // Yes, I'm sure this is good practice.
+app.get(/^(?!\/api).+/gm, function(req, res) {                                  // Yes, I'm sure this is good practice. Thanks Angular. Basically allow anything that doesnt begin with /api
    res.sendfile(path.join(__dirname + '/../WebUI/dist/WebUI/index.html'))
 });
 
@@ -82,6 +82,13 @@ app.post('/api/editconfig', function(req, res) {
     fs.writeFileSync(path.join(__dirname + '/../config.json'), JSON.stringify(config, null, 4)); // Update config file with the new
     res.setHeader('Content-Type', 'application/json'); // Make our responses json format
     res.status(200).send(output);
+});
+
+app.get('/api/getConfig', function(req, res) {
+    // Gets the current client configuration file
+    console.log('sending', config);
+    res.setHeader('Content-Type', 'application/json'); // Make our responses json format
+    res.status(200).send(config);
 });
 
 app.post('/api/stop', function(req, res) {
