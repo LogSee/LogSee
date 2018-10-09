@@ -1,12 +1,9 @@
 // Note: This file must be launched from runClient.js
-// npm install pug
-// Npm install express
 console.log('Initializing WebAPI...');
 const express = require('express'); 
 var bodyParser = require('body-parser');    // npm install trash   ...oh wait no...    body-parser
 var fs = require('fs');
 var path = require('path');
-var child_process = require("child_process");
 
 // Create express app
 let app = new express();
@@ -14,27 +11,13 @@ var config = JSON.parse(fs.readFileSync(__dirname + '/../config.json', 'utf8'));
 var data = JSON.parse(fs.readFileSync(__dirname + '/../.data.json', 'utf8'));
 
 // Define Static files & renderer
-app.use('/static', express.static(path.join(__dirname + '/static')));
-app.set('view engine', 'pug'); // npm install pug !!
-app.set('views', path.join(__dirname + '/views'));
-app.use(bodyParser.json({limit: '500mb'}));                         // for parsing application/json
-app.use(bodyParser.urlencoded({extended: true, limit: '500mb'}));   // for parsing application/x-www-form-urlencoded
+app.use('/', express.static(path.join(__dirname + '/../WebUI/dist/WebUI/')));   // Angular is the new YOLO
+app.use(bodyParser.json({limit: '500mb'}));                                     // for parsing application/json
+app.use(bodyParser.urlencoded({extended: true, limit: '500mb'}));               // for parsing application/x-www-form-urlencoded
 
 // Routes
-app.get('/', function(req, res) {
-   res.render('index', {data: data});
-});
-app.get('/configure', function(req, res) {
-    res.render('configure');
-});
-app.get('/status', function(req, res) {
-    res.render('status');
-});
-app.get('/about', function(req, res) {
-    res.render('about'); 
-});
-app.get('/login', function(req, res) {
-    res.render('login');
+app.get('*', function(req, res) {                                               // Yes, I'm sure this is good practice.
+   res.sendfile(path.join(__dirname + '/../WebUI/dist/WebUI/index.html'))
 });
 
 // API Points
@@ -105,7 +88,7 @@ app.post('/api/stop', function(req, res) {
     process.exit();
 });
 
-
 // Run WebAPI
-app.listen(config.WebAPI.Port, config.WebUI.IP);
-console.log(`WebAPI listening on http://${config.WebUI.IP}:${config.WebAPI.Port}`);
+app.listen(config.WebAPI.Port, config.WebUI.IP, function() {
+    console.log(`WebAPI listening on http://${config.WebUI.IP}:${config.WebAPI.Port}`);
+});
