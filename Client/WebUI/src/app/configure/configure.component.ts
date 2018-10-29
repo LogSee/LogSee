@@ -7,7 +7,7 @@ import {ConfigureService} from '../configure.service';
 })
 export class ConfigureComponent implements OnInit {
 	constructor(private configureService: ConfigureService) {}
-	currentConfig = this.configureService.GetConfig().subscribe(); // Todo: Get the current config and load the inputs with the current config values Warning: Angular sux.
+	currentConfig = this.configureService.GetConfig().subscribe(); // Todo: Get the current config and load the inputs with the current config values. Warning: Angular sux.
 
 	ngOnInit() {
 	}

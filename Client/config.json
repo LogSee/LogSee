@@ -5,7 +5,7 @@
         "LogSee_Port": 1339,
         "LogSee_Key": "",
         "LogSee_Protocol": "http",
-        "PingInterval": 100
+        "PingInterval": 300
     },
     "WebUI": {
         "Enabled": true,

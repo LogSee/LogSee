@@ -7,4 +7,5 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'WebUI';
+  live = {'Status':'I hate angular so much.', 'Color': 'Lime'}
 }

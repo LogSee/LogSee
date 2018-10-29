@@ -292,6 +292,7 @@ app.post('/api/errorhandle', function(req, res) {
 
 
 // Helper functions
+// Checks the client UniqueKey with the database, returns true or automatic response
 const checkClientPromise = function(UniqueKey_Var, res) { // res needed to send automatic denial responses.
     return new Promise(function(resolve, reject) {
         Clients.findOne({
