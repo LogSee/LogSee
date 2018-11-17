@@ -1,10 +1,28 @@
 {
-    "name": "LogSee Client",
-    "description": "The LogSee client responsible for scanning files and sending data to the LogSee Server.",
-    "author": "Ainsey & Popzi",
-    "dependencies": {
-        "request": "2.88.0",
-        "body-parser": "1.18.3",
-        "express": "4.16.3"
-    }
+  "name": "logseeclient",
+  "version": "1.0.0",
+  "description": "Logsee Client Software",
+  "main": "runClient.js",
+  "dependencies": {
+	  "express" : ">=4.16.4",
+	  "request" : ">=2.87.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Logsee/Logsee.git"
+  },
+  "keywords": [
+    "Logsee",
+    "Client"
+  ],
+  "author": "Ainsey11/Popzi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Logsee/Logsee/issues"
+  },
+  "homepage": "https://github.com/Logsee/Logsee#readme"
 }
