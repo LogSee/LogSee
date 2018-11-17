@@ -13,6 +13,7 @@ import { HomeComponent } from './home/home.component';
 //Services
 import { MessageService }       from './message.service';
 import { HttpErrorHandler }     from './http-error-handler.service';
+import { AboutComponent } from './about/about.component';
 
 
 @NgModule({
@@ -20,7 +21,8 @@ import { HttpErrorHandler }     from './http-error-handler.service';
     AppComponent,
     StatusComponent,
     ConfigureComponent,
-    HomeComponent
+    HomeComponent,
+    AboutComponent
   ],
   imports: [
     HttpClientModule,
