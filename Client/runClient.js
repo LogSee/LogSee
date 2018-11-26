@@ -294,7 +294,7 @@ function streamFromLine(fileObj, endNumber = 0, startNumber = 0, encoding = 'utf
     }).catch(err => err);
 };
 
-// Lets the server know we're still alive every config.Client.PingInterval seconds if
+// Lets the server know we're still alive every config.Client.PingInterval seconds
 function Pinger() {
     setInterval(function() {
         console.log('Ping');

@@ -24,5 +24,5 @@ adduser LogSeeClient sudo
 echo "Added LogSee Client User" >> $InstallLog
 
 #SystemD script install
-cp SystemD-Scripts/LogSeeClient.ervice /lib/systemd/system/LogSeeClient.service
+cp SystemD-Scripts/LogSeeClient.service /lib/systemd/system/LogSeeClient.service
 echo "Copied SystemD script over" >> $InstallLog

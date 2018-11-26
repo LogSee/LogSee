@@ -6,7 +6,7 @@ After=network.target
 [Service]
 Type=Simple
 User=LogSee
-ExecStart=/usr/bin/node /opt/LogSee/Client/app.js
+ExecStart=/usr/bin/node /opt/LogSee/Client/runClient.js
 Restart=on-failure
 
 [Install]
