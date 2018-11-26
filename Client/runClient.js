@@ -1,8 +1,3 @@
-if (process.version[1] != "8") { // Version check
-    console.log('[Critical] - Not running Node v8!')
-    process.exit();
-};
-
 var path = require('path');                     // For managing paths, ofcourse.
 var fs = require('fs');                         // Nodes file system
 var request = require('request');               // npm install request!

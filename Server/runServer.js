@@ -1,8 +1,3 @@
-if (process.version[1] != "8") { // Version check
-    console.log('[WARNING] - Not running Node v8!')
-    process.exit();
-};
-
 var bodyParser = require('body-parser');    // npm install trash   ...oh wait no...    body-parser
 var Sequelize = require('sequelize');       // npm install sequelize, mysql2    (database ORM)
 var express = require('express');           // npm install express      (for serving web stuff)
