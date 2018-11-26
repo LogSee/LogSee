@@ -1,17 +1,19 @@
 {
-  "name": "logseeclient",
+  "name": "logseeserver",
   "version": "1.0.0",
   "homepage": "https://github.com/Logsee/Logsee",
-  "description": "Logsee Client Software",
+  "description": "Logsee Server Software",
   "author": "Ainsey11 & Popzi",
   "license": "ISC",
-  "main": "runClient.js",
+  "main": "runServer.js",
   "engines": {
     "node": ">=8"
   },
   "dependencies": {
-    "express": ">=4.16.4",
-    "request": ">=2.87.0"
+    "body-parser": ">=1.18.3",
+    "sequelize": ">=4.41.2",
+    "mysql2": ">=1.6.4",
+    "express": ">=4.16.4"
   },
   "devDependencies": {},
   "scripts": {},
