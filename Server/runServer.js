@@ -4,43 +4,39 @@ var express = require('express');           // npm install express      (for ser
 var crypto = require('crypto');              
 var path = require('path');
 var fs = require('fs');
-//var sqlite3 = require('sqlite3')          // npm install sqlite3      (for talking to sqlite3)
-//var tedious = require('tedious')          // npm install tedious      (for talking to Microsoft SQL)
 
 // Create express app
 console.log('Initializing WebUI...');
+console.log(__dirname);
 let app = new express();
-var config = JSON.parse(fs.readFileSync(path.join(__dirname + '/config.json'), 'utf8'));
-
-// Setup a post body parser and set its limit, Unlikely that the client will ever be sending 500mb+ of data across at a given time...
-// Todo: Catch this - https://github.com/expressjs/body-parser#request-entity-too-large
-app.use(bodyParser.json({limit: '500mb'}));                         // for parsing application/json
+app.use(bodyParser.json({limit: '500mb'}));                         // Setup a post body parser and set its limit, Unlikely that the client will ever be sending 500mb+ of data across at a given time...
 app.use(bodyParser.urlencoded({extended: true, limit: '500mb'}));   // for parsing application/x-www-form-urlencoded
-app.use(express.static(path.join(__dirname + '/WebUI/static')));    // Static routes
+app.use(express.static(path.join(__dirname + '/WebUI-Dist')));    // Static routes
+const config = JSON.parse(fs.readFileSync(path.join(__dirname + '/config.json'), 'utf8'));
 
 // Create ORM
-const sequelize = new Sequelize(config.Server.SQL_DB, config.Server.SQL_User, config.Server.SQL_Pass, {
-    host: config.Server.SQL_Host,
-    port: config.Server.SQL_Port,
-    dialect: 'mysql',
+const sequelize = new Sequelize(config.SQL.SQL_DB, config.SQL.SQL_User, config.SQL.SQL_Pass, {
+    host: config.SQL.SQL_Host,
+    port: config.SQL.SQL_Port,
+    dialect: config.SQL.DBMS,   // Currently supports mysql, postgres, mssql
     define: {
-        timestamps: false // Fixes a weird 'bug' with a column which we don't even have.
+        timestamps: false       // Fixes a weird 'bug' with a column which we don't even have.
     }
 });
 
 // Import all models
-const Users = sequelize.import(path.join(__dirname + '/Database/models/Users.js'));
-const Alerts = sequelize.import(path.join(__dirname + '/Database/models/Alerts.js'))
-const Clients = sequelize.import(path.join(__dirname + '/Database/models/Clients.js'))
-const InitialAuthKeys = sequelize.import(path.join(__dirname + '/Database/models/InitialAuthKeys.js'))
-const LogFiles = sequelize.import(path.join(__dirname + '/Database/models/LogFiles.js'))
-const LogSeries = sequelize.import(path.join(__dirname + '/Database/models/LogSeries.js'))
-const ServerStatus = sequelize.import(path.join(__dirname + '/Database/models/ServerStatus.js'))
-const NotificationsQueue = sequelize.import(path.join(__dirname + '/Database/models/NotificationsQueue.js'))
+const Users =               sequelize.import(path.join(__dirname + '/Database/models/Users.js'));
+const Alerts =              sequelize.import(path.join(__dirname + '/Database/models/Alerts.js'));
+const Clients =             sequelize.import(path.join(__dirname + '/Database/models/Clients.js'));
+const InitialAuthKeys =     sequelize.import(path.join(__dirname + '/Database/models/InitialAuthKeys.js'));
+const LogFiles =            sequelize.import(path.join(__dirname + '/Database/models/LogFiles.js'));
+const LogSeries =           sequelize.import(path.join(__dirname + '/Database/models/LogSeries.js'));
+const ServerStatus =        sequelize.import(path.join(__dirname + '/Database/models/ServerStatus.js'));
+const NotificationsQueue =  sequelize.import(path.join(__dirname + '/Database/models/NotificationsQueue.js'));
 
 // URL / WebUI Routes
 app.get('/', function(req, res) {
-    res.sendFile(path.join(__dirname + '/WebUI/templates/index.html'));
+    res.sendFile(path.join(__dirname + '/WebUI-Dist/index.html'));
 });
 
 // API Routes

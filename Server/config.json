@@ -1,14 +1,15 @@
 {
-    "Server": {
+    "SQL": {
         "SQL_Host": "172.16.1.71",
         "SQL_Port": 3306,
         "SQL_DB": "LogSee",
         "SQL_User": "logsee",
-        "SQL_Pass": "LogSee"
+        "SQL_Pass": "LogSee",
+        "DBMS": "mysql"
     },
     "WebUI": {
         "Port": 1339,
-        "IP": "0.0.0.0",
+        "IP": "127.0.0.1",
         "RequireAuth": true,
         "AuthUser": "admin",
         "AuthPass": "admin"
@@ -24,11 +25,11 @@
    },
    "Notifications": {
       "Simplepush": {
-         "Enabled": true,
+         "Enabled": false,
          "Key": "HuxgBB"
       },
       "Slack": {
-          "Enabled" :true,
+          "Enabled" :false,
           "SlackWebhookURL" : "http://slackwebhookurl.seedocumentation.logsee.lolz"
       }
    },
