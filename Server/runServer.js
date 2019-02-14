@@ -16,7 +16,7 @@ console.log(__dirname);
 let app = new express();
 app.use(bodyParser.json({limit: '500mb'}));                         // Setup a post body parser and set its limit, Unlikely that the client will ever be sending 500mb+ of data across at a given time...
 app.use(bodyParser.urlencoded({extended: true, limit: '500mb'}));   // for parsing application/x-www-form-urlencoded
-app.use(express.static(path.join(__dirname + '/WebUI-Dist')));    // Static routes
+app.use(express.static(path.join(__dirname + '/WebUI/dist/LogSee-Angular')));    // Static routes
 const config = JSON.parse(fs.readFileSync(path.join(__dirname + '/config.json'), 'utf8'));
 
 // Create ORM
@@ -30,18 +30,22 @@ const sequelize = new Sequelize(config.SQL.SQL_DB, config.SQL.SQL_User, config.S
 });
 
 // Import all models
-const Users =               sequelize.import(path.join(__dirname + '/Database/models/Users.js'));
-const Alerts =              sequelize.import(path.join(__dirname + '/Database/models/Alerts.js'));
-const Clients =             sequelize.import(path.join(__dirname + '/Database/models/Clients.js'));
-const InitialAuthKeys =     sequelize.import(path.join(__dirname + '/Database/models/InitialAuthKeys.js'));
-const LogFiles =            sequelize.import(path.join(__dirname + '/Database/models/LogFiles.js'));
-const LogSeries =           sequelize.import(path.join(__dirname + '/Database/models/LogSeries.js'));
-const ServerStatus =        sequelize.import(path.join(__dirname + '/Database/models/ServerStatus.js'));
-const NotificationsQueue =  sequelize.import(path.join(__dirname + '/Database/models/NotificationsQueue.js'));
+const models = require('./Database')
+const Users =               sequelize.import(models.Users);
+const Alerts =              sequelize.import(models.Alerts);
+const Clients =             sequelize.import(models.Clients);
+const InitialAuthKeys =     sequelize.import(models.InitialAuthKeys);
+const LogFiles =            sequelize.import(models.LogFiles);
+const LogSeries =           sequelize.import(models.LogSeries);
+const ServerStatus =        sequelize.import(models.ServerStatus);
+const NotificationsQueue =  sequelize.import(models.NotificationsQueue);
+
+
 
 // URL / WebUI Routes
 app.get('/', function(req, res) {
-    res.sendFile(path.join(__dirname + '/WebUI-Dist/index.html'));
+    res.sendFile(path.join(__dirname + '/WebUI/dist/LogSee-Angular/index.html'));
+    
 });
 
 // API Routes
@@ -312,5 +316,5 @@ const checkClientPromise = function(UniqueKey_Var, res) { // res needed to send 
 
 // Run WebUI
 app.listen(config.WebUI.Port, config.WebUI.IP);
-console.log(`WebUI listening on http://${config.WebUI.IP}:${config.WebUI.Port}.`);
+console.log(`WebUI listening on http://${config.WebUI.IP}:${config.WebUI.Port}`);
  
