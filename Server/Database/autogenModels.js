@@ -1,3 +1,8 @@
+/*
+    Author: Popzi
+    Desription: Logs into the database and automatically generates the sequelize models
+*/
+
 // Note, this file is for the developers of LogSee more than anything, and shouldn't be needed by end users unless special modifications are made to the database schema.
 // Example for MySQL/MariaDB `npm install -g mysql`
 // Example for Postgres `npm install -g pg pg-hstore`

@@ -1,3 +1,8 @@
+/*
+    Author: 
+    Description: Creates log files and fills them with random data. Use this in conjuction with client.config to test the client-server functionality
+*/
+
 var fs = require('fs');
 var path = require('path');
 

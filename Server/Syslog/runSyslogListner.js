@@ -1,3 +1,7 @@
+/*
+    Author: Ainsey
+    Description: 
+*/
 const SyslogServer = require("syslog-server");
 const server = new SyslogServer();
  

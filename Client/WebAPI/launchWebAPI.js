@@ -1,3 +1,8 @@
+/*
+    Author: Popzi
+    Description: Launches the express framework to handle simple get/post requests which the client uses
+*/
+
 // Note: This file must be launched from runClient.js
 console.log('Initializing WebAPI...');
 const express = require('express'); 

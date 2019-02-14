@@ -1,3 +1,8 @@
+/*
+    Author: Popzi, Ainsey
+    Description: Express API, serves dist files from Angular in WebUI/Dist
+*/
+
 var bodyParser = require('body-parser');    // npm install trash   ...oh wait no...    body-parser
 var Sequelize = require('sequelize');       // npm install sequelize, mysql2    (database ORM)
 var express = require('express');           // npm install express      (for serving web stuff)
