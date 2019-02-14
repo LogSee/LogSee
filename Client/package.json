@@ -1,29 +1,29 @@
 {
-  "name": "logsee_client",
-  "version": "1.0.0",
-  "homepage": "https://github.com/Logsee/Logsee",
-  "description": "Logsee Client Software",
-  "author": "Ainsey11 & Popzi",
-  "license": "ISC",
-  "main": "runClient.js",
-  "engines": {
-    "node": ">=8"
-  },
-  "dependencies": {
-    "express": ">=4.16.4",
-    "request": ">=2.87.0"
-  },
-  "devDependencies": {},
-  "scripts": {},
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Logsee/Logsee.git"
-  },
-  "keywords": [
-    "Logsee",
-    "Client"
-  ],
-  "bugs": {
-    "url": "https://github.com/Logsee/Logsee/issues"
-  }
+	"name": "logsee_client",
+	"version": "1.0.0",
+	"homepage": "https://github.com/Logsee/Logsee",
+	"description": "Logsee Client Software",
+	"author": "Ainsey11 & Popzi",
+	"license": "ISC",
+	"main": "runClient.js",
+	"engines": {
+		"node": ">=8"
+	},
+	"dependencies": {
+		"express": ">=4.16.4",
+		"request": ">=2.87.0"
+	},
+	"devDependencies": {},
+	"scripts": {},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Logsee/Logsee.git"
+	},
+	"keywords": [
+		"Logsee",
+		"Client"
+	],
+	"bugs": {
+		"url": "https://github.com/Logsee/Logsee/issues"
+	}
 }

@@ -1,15 +1,15 @@
 {
-    "Client": {
-        "ClientSideFiltering": false,
-        "LogSee_Server_Host": "127.0.0.1",
-        "LogSee_Server_Port": 1339,
-        "LogSee_Server_Key": "",
-        "LogSee_Server_Protocol": "http",
-        "PingInterval": 300
-    },
-    "PathsToScan": [
-        {
-            "Location": "C:\\Users\\Anon\\Documents\\GitHub\\LogSee\\DevTools\\sampleLog.log"
-        }
-    ]
+	"Client": {
+		"ClientSideFiltering": false,
+		"LogSee_Server_Host": "127.0.0.1",
+		"LogSee_Server_Port": 1339,
+		"LogSee_Server_Key": "",
+		"LogSee_Server_Protocol": "http",
+		"PingInterval": 300
+	},
+	"PathsToScan": [
+		{
+			"Location": "C:\\Users\\Anon\\Documents\\GitHub\\LogSee\\DevTools\\sampleLog.log"
+		}
+	]
 }

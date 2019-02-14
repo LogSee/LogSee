@@ -1,44 +1,43 @@
 {
-    "SQL": {
-        "SQL_Host": "172.16.1.71",
-        "SQL_Port": 3306,
-        "SQL_DB": "LogSee",
-        "SQL_User": "logsee",
-        "SQL_Pass": "LogSee",
-        "DBMS": "mysql"
-    },
-    "WebUI": {
-        "Port": 1339,
-        "IP": "127.0.0.1",
-        "RequireAuth": true,
-        "AuthUser": "admin",
-        "AuthPass": "admin"
-    },
-   "Email": {
-      "Enabled": true,
-      "SmtpServer":"smtp.gmail.com",
-      "SmtpPort": "587",
-      "SmtpSSL" : true,
-      "Username": "",
-      "Password": "",
-      "FromAddress": ""     
-   },
-   "Notifications": {
-      "Simplepush": {
-         "Enabled": false,
-         "Key": "HuxgBB"
-      },
-      "Slack": {
-          "Enabled" :false,
-          "SlackWebhookURL" : "http://slackwebhookurl.seedocumentation.logsee.lolz"
-      }
-   },
-   "LDAP": {
-    "Enabled" : false,
-    "DomainName" : "ad.logsee.local",
-    "LDAPServer" : "nc-ad.nerdcave.us",
-    "Username" : "AD\\LogSeeSvc",
-    "Password" : "magicalrandompasswordthatisubersafeandubersecure"
-    }   
-
+	"SQL": {
+		"SQL_Host": "172.16.1.71",
+		"SQL_Port": 3306,
+		"SQL_DB": "LogSee",
+		"SQL_User": "logsee",
+		"SQL_Pass": "LogSee",
+		"DBMS": "mysql"
+	},
+	"WebUI": {
+		"Port": 1339,
+		"IP": "127.0.0.1",
+		"RequireAuth": true,
+		"AuthUser": "admin",
+		"AuthPass": "admin"
+	},
+	"Email": {
+		"Enabled": true,
+		"SmtpServer": "smtp.gmail.com",
+		"SmtpPort": "587",
+		"SmtpSSL": true,
+		"Username": "",
+		"Password": "",
+		"FromAddress": ""
+	},
+	"Notifications": {
+		"Simplepush": {
+			"Enabled": false,
+			"Key": "HuxgBB"
+		},
+		"Slack": {
+			"Enabled": false,
+			"SlackWebhookURL": "http://slackwebhookurl.seedocumentation.logsee.lolz"
+		}
+	},
+	"LDAP": {
+		"Enabled": false,
+		"DomainName": "ad.logsee.local",
+		"LDAPServer": "nc-ad.nerdcave.us",
+		"Username": "AD\\LogSeeSvc",
+		"Password": "magicalrandompasswordthatisubersafeandubersecure"
+	}
 }

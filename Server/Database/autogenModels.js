@@ -1,6 +1,6 @@
 /*
-    Author: Popzi
-    Desription: Logs into the database and automatically generates the sequelize models
+	Author: Popzi
+	Desription: Logs into the database and automatically generates the sequelize models
 */
 
 // Note, this file is for the developers of LogSee more than anything, and shouldn't be needed by end users unless special modifications are made to the database schema.
@@ -17,13 +17,13 @@ var config = JSON.parse(fs.readFileSync(path.join(__dirname + '/../config.json')
 process.chdir(__dirname); // Pops all the models here
 
 var auto = new SequelizeAuto(config.Server.SQL_DB, config.Server.SQL_User, config.Server.SQL_Pass, {
-    dialect: 'mysql',
-    host: config.Server.SQL_Host,
-    port: config.Server.SQL_Port
+	dialect: 'mysql',
+	host: config.Server.SQL_Host,
+	port: config.Server.SQL_Port
 });
 
 auto.run(function (err) {
-  if (err) throw err;
-  console.log(auto.tables); // table list
-  console.log(auto.foreignKeys); // foreign key list
+	if (err) throw err;
+	console.log(auto.tables); // table list
+	console.log(auto.foreignKeys); // foreign key list
 });
