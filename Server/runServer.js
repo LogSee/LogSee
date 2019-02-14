@@ -3,44 +3,20 @@
 	Description: Express API, serves dist files from Angular in WebUI/Dist
 */
 
-var bodyParser = require('body-parser');    // npm install trash   ...oh wait no...    body-parser
-var Sequelize = require('sequelize');       // npm install sequelize, mysql2    (database ORM)
-var express = require('express');           // npm install express      (for serving web stuff)
+var bodyParser = require('body-parser');
+var express = require('express');
 var crypto = require('crypto');
 var path = require('path');
 var fs = require('fs');
 
 // Create express app
-console.log('Initializing WebUI...');
-console.log(__dirname);
 let app = new express();
 app.use(bodyParser.json({ limit: '500mb' }));                         // Setup a post body parser and set its limit, Unlikely that the client will ever be sending 500mb+ of data across at a given time...
 app.use(bodyParser.urlencoded({ extended: true, limit: '500mb' }));   // for parsing application/x-www-form-urlencoded
 app.use(express.static(path.join(__dirname + '/WebUI/dist/LogSee-Angular')));    // Static routes
 const config = JSON.parse(fs.readFileSync(path.join(__dirname + '/config.json'), 'utf8'));
 
-// Create ORM
-const sequelize = new Sequelize(config.SQL.SQL_DB, config.SQL.SQL_User, config.SQL.SQL_Pass, {
-	host: config.SQL.SQL_Host,
-	port: config.SQL.SQL_Port,
-	dialect: config.SQL.DBMS,   // Currently supports mysql, postgres, mssql
-	define: {
-		timestamps: false       // Fixes a weird 'bug' with a column which we don't even have.
-	}
-});
-
-// Import all models
-const models = require('./Database')
-const Users = sequelize.import(models.Users);
-const Alerts = sequelize.import(models.Alerts);
-const Clients = sequelize.import(models.Clients);
-const InitialAuthKeys = sequelize.import(models.InitialAuthKeys);
-const LogFiles = sequelize.import(models.LogFiles);
-const LogSeries = sequelize.import(models.LogSeries);
-const ServerStatus = sequelize.import(models.ServerStatus);
-const NotificationsQueue = sequelize.import(models.NotificationsQueue);
-
-
+// Todo: ORM Removed, update db calls using mongo
 
 // URL / WebUI Routes
 app.get('/', function (req, res) {
