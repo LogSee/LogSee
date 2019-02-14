@@ -1,6 +1,6 @@
 /*
     Author: Popzi, Ainsey
-    Description: Main client file. Launched the webAPI and does everything.
+    Description: Main client file. Does everything.
 */
 
 var path = require('path');                     // For managing paths, ofcourse.
@@ -57,9 +57,6 @@ function Init(callback) {
     } else {
         UpdateData();                                                                                   // Else create the file (before the webui launches)
     };
-
-    // Launch the webAPI regardless
-    require(__dirname + '/WebAPI/launchWebAPI.js');
 
     // Create a quick n dirty config variable which concats the LogSee Server URI together (LSSURI (LogSee Server URI))
     config.LSSURI = `${config.Client.LogSee_Server_Protocol}://${config.Client.LogSee_Server_Host}:${config.Client.LogSee_Server_Port}`;
