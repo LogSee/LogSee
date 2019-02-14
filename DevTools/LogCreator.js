@@ -1,5 +1,5 @@
 /*
-    Author: 
+    Author: Ainsey, Popzi
     Description: Creates log files and fills them with random data. Use this in conjuction with client.config to test the client-server functionality
 */
 

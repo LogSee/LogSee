@@ -1,5 +1,5 @@
 /*
-    Author: 
+    Author: Ainsey
     Description: 
 */
 var eventlog = require('windows-eventlog-reader');
