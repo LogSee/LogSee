@@ -1,0 +1,56 @@
+<p>
+  page-config works!
+</p>
+
+<style>
+	.flip {
+		position: relative;
+		
+	}
+	.flip-front {
+		position: absolute;
+		transition: all 1s ease;
+		top: 0;
+		z-index: 100;
+  		transform-style: preserve-3d;
+		transform: rotateX(0deg) rotateY(0deg);
+		backface-visibility: hidden;
+	}
+	.flip-back {
+		position: absolute;
+		transition: all 1s ease;
+		top:0;
+		z-index: 99;
+  		transform-style: preserve-3d;
+		transform: rotateX(0deg) rotateY(-180deg);
+		backface-visibility: hidden;
+	}
+	.flip:hover > .flip-front {
+		transform: rotateX(0deg) rotateY(180deg);
+		backface-visibility: hidden;
+	}
+	.flip:hover > .flip-back {
+		transform: rotateX(0deg) rotateY(0deg);
+		backface-visibility: hidden;
+	}
+	.flip-outie {
+		padding: 20%;
+		transform: translateY(0) translateZ(60px) scale(1);
+		backface-visibility: hidden;
+	}
+</style>
+
+
+<div class="m-4 flip">
+	<div class="flip-front" style="background: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), url(https://i.pinimg.com/originals/89/86/d6/8986d6bfbb13ab11f47d68e273c9714e.jpg); width: 400px; height:400px;">
+		<div class="flip-outie">
+			<p>Hello World.</p>
+			<div style="height:90px; background: pink;" class="w-100"></div>
+		</div>
+	</div>
+	<div class="flip-back" style="background: linear-gradient(rgba(255, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), url(https://i.pinimg.com/originals/89/86/d6/8986d6bfbb13ab11f47d68e273c9714e.jpg); width: 400px; height:400px;">
+		<div class="flip-outie">
+			<p>Goodbye World.</p>
+		</div>
+	</div>
+</div>

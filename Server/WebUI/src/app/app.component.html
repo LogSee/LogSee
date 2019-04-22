@@ -1,9 +1,0 @@
-<app-bootstrap></app-bootstrap>
-<app-fontawesome></app-fontawesome>
-
-<app-navbar></app-navbar>
-<mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
-
-<div [@routeAnimations]="prepareRoute(outlet)">
-    <router-outlet #outlet="outlet"></router-outlet>
-</div>

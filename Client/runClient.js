@@ -2,7 +2,6 @@
 	Author: Popzi, Ainsey
 	Description: Main client file. Does everything.
 */
-
 var path = require('path');                     // For managing paths, ofcourse.
 var fs = require('fs');                         // Nodes file system
 var zlib = require('zlib');                     // For compression
@@ -81,10 +80,10 @@ function Authenticate(callback) {
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	// Check that the client WebUI config isn't using the default values
-	if (config.WebUI.RequireAuth && (config.WebUI.AuthUser == "admin" || config.WebUI.AuthPass == "admin")) {
-		console.warn('[Critical] - The WebUI credentials are still set as default. Please change them before running the client.');
-		process.exit();
-	};
+	// if (config.WebUI.RequireAuth && (config.WebUI.AuthUser == "admin" || config.WebUI.AuthPass == "admin")) {
+	// 	console.warn('[Critical] - The WebUI credentials are still set as default. Please change them before running the client.');
+	// 	process.exit();
+	// };
 
 	// Ask if our AuthKey matches that of the servers
 	function makeAuthReq() {

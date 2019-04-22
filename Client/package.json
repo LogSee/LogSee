@@ -7,14 +7,17 @@
 	"license": "ISC",
 	"main": "runClient.js",
 	"engines": {
-		"node": ">=8"
+		"node": ">=10"
 	},
 	"dependencies": {
 		"express": ">=4.16.4",
-		"request": ">=2.87.0"
+		"request": "^2.88.0"
 	},
 	"devDependencies": {},
-	"scripts": {},
+	"scripts": {
+		"start": "nodemon -e js,json -x \"npm run serve\"",
+		"serve": "node runClient.js"
+	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/Logsee/Logsee.git"

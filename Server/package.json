@@ -7,15 +7,22 @@
 	"license": "ISC",
 	"main": "runServer.js",
 	"engines": {
-		"node": ">=8"
+		"node": ">=10"
 	},
 	"dependencies": {
 		"body-parser": ">=1.18.3",
 		"express": ">=4.16.4",
-		"mongodb": "^3.1.13"
+		"mongodb": "^3.1.13",
+		"nodemon": "^1.18.11"
 	},
 	"devDependencies": {},
-	"scripts": {},
+	"scripts": {
+		"start": "nodemon -e js,json,css,scss -x \"npm run build && npm run serve\" --ignore WebDist/",
+		"start-nobuild": "nodemon -e js,json,css,scss -x \"npm run serve\" --ignore WebDist/",
+		"build": "npm run build-web",
+		"serve": "node runServer.js",
+		"build-web": "cd ./WebSrc && npm run build"
+	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/Logsee/Logsee.git"
